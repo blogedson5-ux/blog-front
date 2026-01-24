@@ -1,9 +1,13 @@
-export interface ProductProps {
+export interface PropsProduct {
   _id: string;
   name: string;
-  cod: string;
-  qnt: string;
-  value: string;
-  enterprise: string;
-  description: string;
+  category: string;
+  priceUnit: string;
+  priceWholesale: string;
+  image: {
+    url: string;
+    filename: string;
+    public_id: string;
+  };
 }
+[];

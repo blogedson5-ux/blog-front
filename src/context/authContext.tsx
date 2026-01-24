@@ -30,6 +30,7 @@ interface AlertType {
 interface AuthContextType {
   user: User | null;
   alert: AlertType | null;
+  loading: boolean;
   signIn: (data: SignInData) => Promise<void>;
 }
 
@@ -42,6 +43,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [userData, setUserData] = useState<User | null>(null);
   const [alert, setAlert] = useState<AlertType>({ type: null, message: "" });
+  const [loading, setLoading] = useState(false);
+
   const router = useRouter();
 
   const getAdminProfile = async () => {
@@ -72,10 +75,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, []);
 
   async function signIn({ email, password }: SignInData) {
+    setLoading(true);
+
     try {
-      console.log("");
-      const response = await axios.post("/auth/login", { email, password });
-      console.log(response);
+      const response = await axios.post("/auth/login", {
+        email: email?.trim(),
+        password: password?.trim(),
+      });
+
       const { token } = response.data;
 
       setCookie(undefined, "nextauth.token", token, {
@@ -99,15 +106,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       router.push(`/dashboard/admin/${userId}`);
     } catch (error) {
       const err = error as AxiosError<{ message?: string }>;
+
       setAlert({
         type: "error",
-        message: err?.response?.data?.message || "Erro ao fazer login de admin",
+        message:
+          err.response?.data?.message ||
+          `Erro ${err.response?.status || ""} ao fazer login`,
       });
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
-    <AuthContext.Provider value={{ user: userData, signIn, alert }}>
+    <AuthContext.Provider value={{ user: userData, signIn, alert, loading }}>
       {children}
     </AuthContext.Provider>
   );

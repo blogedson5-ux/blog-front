@@ -1,99 +1,81 @@
 import styled from "styled-components";
 
-export const Container = styled.div`
-  height: 100vh;
-  width: 100%;
+export const Container = styled.section`
+  min-height: 100vh;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+
+  h2 {
+    font-size: 25px;
+  }
+`;
+
+export const BackButton = styled.button`
+  position: absolute;
+  top: 20px;
+  left: 20px;
+
   display: flex;
   align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #0070f3, #ff7e00);
-  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-`;
+  gap: 6px;
 
-export const Card = styled.div`
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(12px);
-  padding: 3rem 2.5rem;
-  border-radius: 1.5rem;
-  width: 100%;
-  max-width: 400px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  animation: fadeIn 0.6s ease-in-out;
-
-  @keyframes fadeIn {
-    from {
-      transform: translateY(30px);
-      opacity: 0;
-    }
-    to {
-      transform: translateY(0);
-      opacity: 1;
-    }
-  }
-`;
-
-export const TitleCardSingIn = styled.h1`
-  text-align: center;
-  font-size: 2rem;
-  font-weight: bold;
-  background: linear-gradient(135deg, #0070f3, #ff7e00);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-`;
-
-export const BoxInput = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  width: 100%; // garante que o box ocupe todo o card
-`;
-
-export const Input = styled.input`
-  width: 100%; // garante que o input não ultrapasse o card
-  padding: 0.9rem 1.2rem;
-  border-radius: 0.8rem;
+  background: transparent;
   border: none;
-  outline: none;
-  font-size: 1rem;
-  background: rgba(255, 255, 255, 0.2);
-  color: #fff;
+  color: #111827;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
 
-  &::placeholder {
-    color: rgba(255, 255, 255, 0.7);
-  }
-
-  &:focus {
-    background: rgba(255, 255, 255, 0.3);
-    box-shadow: 0 0 0 2px #0070f3;
+  &:hover {
+    color: #f97316;
   }
 `;
 
-export const BoxButtonSend = styled.div`
+export const Form = styled.div`
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+`;
+
+export const Field = styled.div`
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+
+  label {
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+    color: #111827;
+  }
+
+  input {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+
+    &:focus {
+      border-color: #f97316;
+      box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
+      outline: none;
+    }
+  }
 `;
 
 export const Button = styled.button`
-  padding: 0.9rem 1.2rem;
-  border-radius: 0.8rem;
-  border: none;
+  width: 100%;
+  padding: 14px;
+  background: #f97316;
+  color: #ffffff;
   font-size: 1rem;
-  font-weight: bold;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
   cursor: pointer;
-  background: linear-gradient(135deg, #0070f3, #ff7e00);
-  color: white;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
 
   &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-  }
-
-  &:active {
-    transform: scale(0.97);
+    background: #ea580c;
   }
 `;

@@ -1,18 +1,18 @@
 "use client";
-import { useAuth } from "@/context/authContext";
-import {
-  BoxButtonSend,
-  BoxInput,
-  Button,
-  Card,
-  Container,
-  Input,
-  TitleCardSingIn,
-} from "./styles";
-import { useState } from "react";
 
-export default function Auth() {
-  const { signIn } = useAuth();
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/authContext";
+
+import { FiArrowLeft } from "react-icons/fi";
+
+import { Container, BackButton, Form, Field, Button } from "./styles";
+
+export default function LoginForm() {
+  const { signIn, alert, loading } = useAuth();
+
+  const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -27,32 +27,44 @@ export default function Auth() {
 
   return (
     <Container>
-      <Card>
-        <TitleCardSingIn>SingIn</TitleCardSingIn>
+      <BackButton onClick={() => router.push("/")}>
+        <FiArrowLeft size={20} />
+        Voltar
+      </BackButton>
 
-        <BoxInput>
-          <Input
-            type="text"
+      <h2>Login</h2>
+
+      <Form>
+        <Field>
+          <label htmlFor="email">E-mail</label>
+          <input
             id="email"
-            placeholder="Usuário"
+            type="email"
+            name="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-          <Input
-            type="text"
+        </Field>
+
+        <Field>
+          <label htmlFor="password">Senha</label>
+          <input
             id="password"
-            placeholder="Senha"
+            type="password"
+            name="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-        </BoxInput>
+        </Field>
 
-        <BoxButtonSend>
-          <Button onClick={handleSubmitAdm}>Entrar</Button>
-        </BoxButtonSend>
-      </Card>
+        <Button onClick={handleSubmitAdm} disabled={loading}>
+          {loading ? "Entrando..." : "Entrar"}
+        </Button>
+
+        <div>{alert?.message}</div>
+      </Form>
     </Container>
   );
 }
