@@ -22,8 +22,8 @@ export function ProductGrid({ dataProduct }: PropsDataProduct) {
             className="image"
             src={item.image.url}
             alt={item.image.filename}
-            width={100}
-            height={100}
+            width={1000}
+            height={1000}
           />
           <h3>{item.name}</h3>
           <span>Consulte disponibilidade</span>

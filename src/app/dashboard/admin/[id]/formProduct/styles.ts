@@ -2,6 +2,8 @@ import styled from "styled-components";
 
 export const Container = styled.section`
   padding: 16px;
+  max-width: 480px;
+  margin: 0 auto;
 `;
 
 export const Form = styled.form`
@@ -21,6 +23,14 @@ export const UploadCard = styled.label`
   gap: 6px;
   cursor: pointer;
   background: #fff7ed;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+
+  &:hover {
+    background: #ffedd5;
+    border-color: #f97316;
+  }
 
   span {
     font-weight: 600;
@@ -39,9 +49,11 @@ export const UploadCard = styled.label`
 
 export const ImagePreview = styled.div`
   position: relative;
-  height: 220px;
+  width: 100%;
+  aspect-ratio: 1 / 1; /* 🔥 padroniza igual ao card */
   border-radius: 14px;
   overflow: hidden;
+  background: #e5e7eb;
 
   img {
     width: 100%;
@@ -61,6 +73,11 @@ export const RemoveImageButton = styled.button`
   padding: 8px 14px;
   font-size: 0.8rem;
   cursor: pointer;
+  backdrop-filter: blur(4px);
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.8);
+  }
 `;
 
 export const Field = styled.div`
@@ -71,6 +88,7 @@ export const Field = styled.div`
   label {
     font-size: 0.9rem;
     font-weight: 500;
+    color: #374151;
   }
 
   input {
@@ -95,4 +113,9 @@ export const Button = styled.button`
   color: #fff;
   font-size: 1rem;
   font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    background: #ea580c;
+  }
 `;

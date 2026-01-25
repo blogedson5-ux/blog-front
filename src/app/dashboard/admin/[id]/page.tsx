@@ -15,10 +15,20 @@ import {
   MenuItem,
   LogoutButton,
   MenuToggleButton,
+  BoxProductList,
 } from "./styles";
 import { destroyCookie } from "nookies";
+import { getProduct } from "@/hooks/useClient";
+import { PropsProduct } from "@/types/product";
+import { useQuery } from "@tanstack/react-query";
+import CatalogPage from "@/components/CatalogPage";
 
 export default function Sidebar() {
+  const { data: dataProduct } = useQuery<PropsProduct[]>({
+    queryKey: ["Product"],
+    queryFn: getProduct,
+  });
+
   const router = useRouter();
   const pathname = usePathname();
 
@@ -32,7 +42,7 @@ export default function Sidebar() {
   };
 
   return (
-    <Wrapper>
+    <>
       <MenuToggleButton onClick={() => setIsOpen(true)}>
         <FiMenu size={28} />
       </MenuToggleButton>
@@ -57,6 +67,12 @@ export default function Sidebar() {
           Sair
         </LogoutButton>
       </SidebarContainer>
-    </Wrapper>
+
+      <Wrapper>
+        <BoxProductList>
+          <CatalogPage adm="admin" products={dataProduct} />
+        </BoxProductList>
+      </Wrapper>
+    </>
   );
 }

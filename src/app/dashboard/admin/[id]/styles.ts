@@ -1,6 +1,11 @@
 import styled from "styled-components";
 
-export const Wrapper = styled.div``;
+export const Wrapper = styled.div`
+  @media (min-width: 640px) {
+    display: flex;
+    justify-content: center;
+  }
+`;
 
 export const MenuButton = styled.button`
   display: flex;
@@ -21,7 +26,7 @@ export const MenuToggleButton = styled.button`
 
   background: transparent;
   border: none;
-  color: #111827;
+  color: #ffff;
   cursor: pointer;
 
   position: relative;
@@ -98,3 +103,5 @@ export const LogoutButton = styled.button`
   font-weight: 600;
   cursor: pointer;
 `;
+
+export const BoxProductList = styled.div``;

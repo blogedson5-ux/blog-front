@@ -1,5 +1,5 @@
-"use client"
-import styled from 'styled-components';
+"use client";
+import styled from "styled-components";
 
 export const Container = styled.section`
   padding: 0 20px;
@@ -21,4 +21,15 @@ export const Button = styled.button`
   font-size: 1rem;
   font-weight: 600;
   border-radius: 8px;
+
+  @media (min-width: 640px) {
+    max-width: 700px;
+    gap: 20px;
+  }
+
+  /* 💻 Notebook */
+  @media (min-width: 1024px) {
+    max-width: 400px;
+    gap: 24px;
+  }
 `;
