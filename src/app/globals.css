@@ -1,39 +1,4 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-.cropper-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.75);
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.cropper-container {
-  position: relative;
-  width: 90%;
-  max-width: 420px;
-  aspect-ratio: 1 / 1; /* 🔥 mesmo padrão do preview */
-  background: #111827;
-  border-radius: 16px;
-  overflow: hidden;
-}
-
-.cropper-actions {
-  position: absolute;
-  bottom: 12px;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-}
-
-.cropper-actions button {
-  padding: 8px 16px;
-  background: #f97316;
-  color: #fff;
-  border-radius: 999px;
-  font-size: 0.9rem;
-}

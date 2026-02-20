@@ -1,19 +1,12 @@
 import axios from "@/lib/axios";
+import { News } from "@/types/news";
 
-export const getProduct = async () => {
-  try {
-    const res = await axios.get(`product/get-all-product`);
-    return res.data;
-  } catch (error) {
-    console.error("Error no servidor:", error);
-  }
-};
+export async function getPost() {
+  const { data } = await axios.get(`/post/get-posts`);
+  return data;
+}
 
-export const getBanner = async () => {
-  try {
-    const res = await axios.get(`banner/banners-get`);
-    return res.data;
-  } catch (error) {
-    console.error("Error no servidor:", error);
-  }
-};
+export async function getPostById(id: string): Promise<News> {
+  const { data } = await axios.get(`/post/get-post/${id}`);
+  return data;
+}

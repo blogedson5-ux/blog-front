@@ -1,40 +1,61 @@
 "use client";
+
+import { Search, Menu, LogIn } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { parseCookies } from "nookies";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-
-import { Container } from "./styles";
-
-import { CgProfile } from "react-icons/cg";
-import { IoHomeSharp } from "react-icons/io5";
+import BackAdminButton from "../BackAdminButton";
 
 export function Header() {
   const router = useRouter();
 
-  const [credentialVerifier, setCredentialVerifier] = useState(false);
-
-  const { "nextauth.token": tokenParse } = parseCookies();
-  const { "nextauth.userId": tokenUserId } = parseCookies();
+  const [hasToken, setHasToken] = useState(false);
 
   useEffect(() => {
-    setCredentialVerifier(Boolean(tokenParse && tokenUserId));
-  }, [tokenParse, tokenUserId]);
+    const cookies = parseCookies();
+    const token = cookies["nextauth.userId"];
 
-  console.log(credentialVerifier);
+    if (token) {
+      setHasToken(true);
+    } else {
+      setHasToken(false);
+    }
+  }, []);
 
   return (
-    <Container>
-      <h1>Simões Boné</h1>
+    <header className="sticky top-0 z-50 bg-white border-b">
+      <div className="flex items-center justify-between px-4 py-3">
+        {/* Logo */}
+        <button
+          onClick={() => router.push("/")}
+          className="text-lg font-bold text-gray-900"
+        >
+          Blog Edson
+        </button>
 
-      {credentialVerifier ? (
-        <button onClick={() => router.push(`/dashboard/admin/${tokenUserId}`)}>
-          <IoHomeSharp />
-        </button>
-      ) : (
-        <button onClick={() => router.push("/auth")}>
-          <CgProfile />
-        </button>
-      )}
-    </Container>
+        {/* Actions */}
+        <div className="flex items-center gap-3">
+          <button
+            aria-label="Buscar"
+            className="p-2 rounded-full hover:bg-gray-100"
+          >
+            <Search size={20} />
+          </button>
+
+          {/* Sign In */}
+          {hasToken ? (
+            <BackAdminButton />
+          ) : (
+            <button
+              onClick={() => router.push("/auth")}
+              className="p-2 rounded-full hover:bg-gray-100"
+              aria-label="Entrar"
+            >
+              <LogIn size={20} />
+            </button>
+          )}
+        </div>
+      </div>
+    </header>
   );
 }

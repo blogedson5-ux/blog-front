@@ -1,9 +1,15 @@
-export const theme = {
+import { DefaultTheme } from "styled-components";
+
+export const theme: DefaultTheme = {
   colors: {
-    primary: '#F97316', // laranja moderno
-    background: '#FFFFFF',
-    text: '#111827',
-    muted: '#6B7280',
-    gray: '#E5E7EB',
+    background: "#ffffff",
+    text: "#111827",
+    border: "#e5e7eb",
+    primary: "#2563eb",
+    hover: "#1d4ed8",
+  },
+  breakpoints: {
+    tablet: "768px",
+    desktop: "1024px",
   },
 };
