@@ -2,7 +2,7 @@
 
 import { useAd, usePost } from "@/data/news";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type PostImage = {
   url: string;
@@ -43,6 +43,7 @@ type BannerSlide = {
   href: string;
   cta: string;
 };
+
 type SidebarAd = {
   id: string;
   title: string;
@@ -70,6 +71,9 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState("Todas");
   const [currentBanner, setCurrentBanner] = useState(0);
   const [isMobileCategoriesOpen, setIsMobileCategoriesOpen] = useState(false);
+
+  const touchStartXRef = useRef<number | null>(null);
+  const touchEndXRef = useRef<number | null>(null);
 
   const sidebarAds: SidebarAd[] = [
     {
@@ -122,17 +126,6 @@ export default function Home() {
 
     return () => clearInterval(interval);
   }, [bannerSlides.length]);
-
-  useEffect(() => {
-    if (!isMobileCategoriesOpen) return;
-
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      document.body.style.overflow = originalOverflow;
-    };
-  }, [isMobileCategoriesOpen]);
 
   useEffect(() => {
     if (currentBanner >= bannerSlides.length && bannerSlides.length > 0) {
@@ -233,6 +226,35 @@ export default function Home() {
     setCurrentBanner((prev) => (prev + 1) % bannerSlides.length);
   };
 
+  const handleBannerTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    touchStartXRef.current = e.touches[0].clientX;
+    touchEndXRef.current = null;
+  };
+
+  const handleBannerTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    touchEndXRef.current = e.touches[0].clientX;
+  };
+
+  const handleBannerTouchEnd = () => {
+    if (bannerSlides.length <= 1) return;
+
+    const startX = touchStartXRef.current;
+    const endX = touchEndXRef.current;
+
+    if (startX === null || endX === null) return;
+
+    const distance = startX - endX;
+    const minSwipeDistance = 50;
+
+    if (Math.abs(distance) < minSwipeDistance) return;
+
+    if (distance > 0) {
+      handleNextBanner();
+    } else {
+      handlePrevBanner();
+    }
+  };
+
   const renderNewsImage = ({
     src,
     alt,
@@ -301,7 +323,7 @@ export default function Home() {
             onClick={() => handleNavigateToNews(item._id)}
             className="group cursor-pointer overflow-hidden rounded-[32px] border border-slate-200 bg-white p-2 shadow-[0_20px_60px_rgba(15,23,42,0.08)]"
           >
-            <div className="relative h-[420px] overflow-hidden rounded-[24px] bg-[#eaf4ff] sm:h-[520px] lg:h-[660px]">
+            <div className="relative h-[320px] overflow-hidden rounded-[24px] bg-[#eaf4ff] sm:h-[380px] lg:h-[500px]">
               {renderNewsImage({
                 src: getImageUrl(item),
                 alt: item.titulo,
@@ -327,7 +349,7 @@ export default function Home() {
                 onClick={() => handleNavigateToNews(main._id)}
                 className="group cursor-pointer overflow-hidden rounded-[24px]"
               >
-                <div className="relative h-[420px] overflow-hidden rounded-[24px] bg-[#eaf4ff] sm:h-[520px]">
+                <div className="relative h-[320px] overflow-hidden rounded-[24px] bg-[#eaf4ff] sm:h-[380px]">
                   {renderNewsImage({
                     src: getImageUrl(main),
                     alt: main.titulo,
@@ -344,7 +366,7 @@ export default function Home() {
                 onClick={() => handleNavigateToNews(secondary._id)}
                 className="group cursor-pointer overflow-hidden rounded-[24px]"
               >
-                <div className="relative h-[300px] overflow-hidden rounded-[24px] bg-[#eaf4ff] sm:h-[360px]">
+                <div className="relative h-[220px] overflow-hidden rounded-[24px] bg-[#eaf4ff] sm:h-[280px]">
                   {renderNewsImage({
                     src: getImageUrl(secondary),
                     alt: secondary.titulo,
@@ -363,7 +385,7 @@ export default function Home() {
                 onClick={() => handleNavigateToNews(main._id)}
                 className="group cursor-pointer overflow-hidden rounded-[24px]"
               >
-                <div className="relative min-h-[760px] overflow-hidden rounded-[24px] bg-[#eaf4ff]">
+                <div className="relative min-h-[560px] overflow-hidden rounded-[24px] bg-[#eaf4ff]">
                   {renderNewsImage({
                     src: getImageUrl(main),
                     alt: main.titulo,
@@ -383,7 +405,7 @@ export default function Home() {
                   onClick={() => handleNavigateToNews(secondary._id)}
                   className="group cursor-pointer overflow-hidden rounded-[24px]"
                 >
-                  <div className="relative h-[378px] overflow-hidden rounded-[24px] bg-[#eaf4ff]">
+                  <div className="relative h-[278px] overflow-hidden rounded-[24px] bg-[#eaf4ff]">
                     {renderNewsImage({
                       src: getImageUrl(secondary),
                       alt: secondary.titulo,
@@ -414,7 +436,7 @@ export default function Home() {
               onClick={() => handleNavigateToNews(main._id)}
               className="group cursor-pointer overflow-hidden rounded-[24px]"
             >
-              <div className="relative h-[420px] overflow-hidden rounded-[24px] bg-[#eaf4ff] sm:h-[520px]">
+              <div className="relative h-[320px] overflow-hidden rounded-[24px] bg-[#eaf4ff] sm:h-[380px]">
                 {renderNewsImage({
                   src: getImageUrl(main),
                   alt: main.titulo,
@@ -431,7 +453,7 @@ export default function Home() {
                 onClick={() => handleNavigateToNews(topRight._id)}
                 className="group cursor-pointer overflow-hidden rounded-[24px]"
               >
-                <div className="relative h-[300px] overflow-hidden rounded-[24px] bg-[#eaf4ff] sm:h-[360px]">
+                <div className="relative h-[220px] overflow-hidden rounded-[24px] bg-[#eaf4ff] sm:h-[280px]">
                   {renderNewsImage({
                     src: getImageUrl(topRight),
                     alt: topRight.titulo,
@@ -448,7 +470,7 @@ export default function Home() {
                 onClick={() => handleNavigateToNews(bottomRight._id)}
                 className="group cursor-pointer overflow-hidden rounded-[24px]"
               >
-                <div className="relative h-[300px] overflow-hidden rounded-[24px] bg-[#eaf4ff] sm:h-[360px]">
+                <div className="relative h-[220px] overflow-hidden rounded-[24px] bg-[#eaf4ff] sm:h-[280px]">
                   {renderNewsImage({
                     src: getImageUrl(bottomRight),
                     alt: bottomRight.titulo,
@@ -468,7 +490,7 @@ export default function Home() {
               onClick={() => handleNavigateToNews(main._id)}
               className="group cursor-pointer overflow-hidden rounded-[24px]"
             >
-              <div className="relative min-h-[760px] overflow-hidden rounded-[24px] bg-[#eaf4ff]">
+              <div className="relative min-h-[560px] overflow-hidden rounded-[24px] bg-[#eaf4ff]">
                 {renderNewsImage({
                   src: getImageUrl(main),
                   alt: main.titulo,
@@ -485,7 +507,7 @@ export default function Home() {
                 onClick={() => handleNavigateToNews(topRight._id)}
                 className="group cursor-pointer overflow-hidden rounded-[24px]"
               >
-                <div className="relative h-[378px] overflow-hidden rounded-[24px] bg-[#eaf4ff]">
+                <div className="relative h-[278px] overflow-hidden rounded-[24px] bg-[#eaf4ff]">
                   {renderNewsImage({
                     src: getImageUrl(topRight),
                     alt: topRight.titulo,
@@ -502,7 +524,7 @@ export default function Home() {
                 onClick={() => handleNavigateToNews(bottomRight._id)}
                 className="group cursor-pointer overflow-hidden rounded-[24px]"
               >
-                <div className="relative h-[378px] overflow-hidden rounded-[24px] bg-[#eaf4ff]">
+                <div className="relative h-[278px] overflow-hidden rounded-[24px] bg-[#eaf4ff]">
                   {renderNewsImage({
                     src: getImageUrl(bottomRight),
                     alt: bottomRight.titulo,
@@ -556,111 +578,14 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-white text-slate-900">
       <div className="relative">
-        <section className="border-b border-slate-200 bg-white">
-          <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-            <div className="flex flex-col gap-6">
-              <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-                <div>
-                  <span className="inline-flex rounded-full border border-[#bfe3ff] bg-[#f0f9ff] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.22em] text-[#1E90FF]">
-                    Portal de notícias
-                  </span>
-
-                  <h1 className="mt-4 max-w-4xl text-3xl font-black tracking-[-0.04em] text-slate-900 sm:text-4xl lg:text-[3.4rem] lg:leading-[1.02]">
-                    Últimas notícias e destaques do dia
-                  </h1>
-
-                  <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
-                    Conteúdo atualizado, leitura objetiva e organização visual
-                    com padrão editorial profissional.
-                  </p>
-                </div>
-
-                <div className="w-full md:max-w-sm">
-                  <input
-                    type="text"
-                    placeholder="Pesquisar notícia..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="w-full rounded-2xl border border-[#cfe9ff] bg-[#f8fcff] px-4 py-3.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1E90FF] focus:ring-2 focus:ring-[#d8efff]"
-                  />
-                </div>
-              </div>
-
-              <div className="md:hidden">
-                <button
-                  onClick={() => setIsMobileCategoriesOpen(true)}
-                  className="inline-flex items-center rounded-2xl border border-[#cfe9ff] bg-[#f0f9ff] px-4 py-3 text-sm font-semibold text-[#0f4fa8] shadow-sm transition hover:bg-[#e6f4ff]"
-                >
-                  ☰ Categorias
-                </button>
-              </div>
-
-              <div className="hidden flex-wrap gap-2 md:flex">
-                {categories.map((category) => (
-                  <button
-                    key={category}
-                    onClick={() => setSelectedCategory(category)}
-                    className={`rounded-full px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.14em] transition ${
-                      selectedCategory === category
-                        ? "border border-[#1E90FF] bg-[#1E90FF] text-white"
-                        : "border border-[#cfe9ff] bg-[#f0f9ff] text-[#0f4fa8] hover:bg-[#e6f4ff]"
-                    }`}
-                  >
-                    {category}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {isMobileCategoriesOpen && (
-          <>
+        <section className="mx-auto max-w-7xl px-0 py-0 sm:px-6 sm:py-6 lg:px-8">
+          <div className="relative overflow-hidden rounded-none border-0 bg-white shadow-none sm:rounded-[32px] sm:border sm:border-slate-200 sm:shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
             <div
-              className="fixed inset-0 z-40 bg-slate-900/40 md:hidden"
-              onClick={() => setIsMobileCategoriesOpen(false)}
-            />
-
-            <div className="fixed inset-y-0 left-0 z-50 w-[280px] max-w-[85vw] border-r border-slate-200 bg-white shadow-2xl md:hidden">
-              <div className="flex items-center justify-between border-b border-slate-200 px-4 py-4">
-                <h3 className="text-base font-black text-slate-900">
-                  Categorias
-                </h3>
-
-                <button
-                  onClick={() => setIsMobileCategoriesOpen(false)}
-                  className="rounded-full p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
-                  aria-label="Fechar menu de categorias"
-                >
-                  ✕
-                </button>
-              </div>
-
-              <div className="flex flex-col gap-2 p-4">
-                {categories.map((category) => (
-                  <button
-                    key={category}
-                    onClick={() => {
-                      setSelectedCategory(category);
-                      setIsMobileCategoriesOpen(false);
-                    }}
-                    className={`rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${
-                      selectedCategory === category
-                        ? "border border-[#1E90FF] bg-[#1E90FF] text-white"
-                        : "border border-[#dbeeff] bg-[#f0f9ff] text-[#0f4fa8] hover:bg-[#e6f4ff]"
-                    }`}
-                  >
-                    {category}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </>
-        )}
-
-        <section className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <div className="relative overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
-            <div className="relative h-[220px] sm:h-[320px] lg:h-[390px]">
+              className="relative h-[220px] w-full touch-pan-y sm:h-[320px] lg:h-[390px]"
+              onTouchStart={handleBannerTouchStart}
+              onTouchMove={handleBannerTouchMove}
+              onTouchEnd={handleBannerTouchEnd}
+            >
               {bannerSlides.length > 0 ? (
                 <>
                   {bannerSlides.map((slide, index) => (
@@ -711,38 +636,20 @@ export default function Home() {
                   ))}
 
                   {bannerSlides.length > 1 && (
-                    <>
-                      <button
-                        onClick={handlePrevBanner}
-                        className="absolute left-3 top-1/2 z-20 -translate-y-1/2 rounded-full bg-white/20 p-3 text-white backdrop-blur-sm transition hover:bg-white/30"
-                        aria-label="Banner anterior"
-                      >
-                        ←
-                      </button>
-
-                      <button
-                        onClick={handleNextBanner}
-                        className="absolute right-3 top-1/2 z-20 -translate-y-1/2 rounded-full bg-white/20 p-3 text-white backdrop-blur-sm transition hover:bg-white/30"
-                        aria-label="Próximo banner"
-                      >
-                        →
-                      </button>
-
-                      <div className="absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 gap-2">
-                        {bannerSlides.map((_, index) => (
-                          <button
-                            key={index}
-                            onClick={() => setCurrentBanner(index)}
-                            className={`h-2.5 rounded-full transition-all ${
-                              currentBanner === index
-                                ? "w-8 bg-white"
-                                : "w-2.5 bg-white/45"
-                            }`}
-                            aria-label={`Ir para banner ${index + 1}`}
-                          />
-                        ))}
-                      </div>
-                    </>
+                    <div className="absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 gap-2">
+                      {bannerSlides.map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setCurrentBanner(index)}
+                          className={`h-2.5 rounded-full transition-all ${
+                            currentBanner === index
+                              ? "w-8 bg-white"
+                              : "w-2.5 bg-white/45"
+                          }`}
+                          aria-label={`Ir para banner ${index + 1}`}
+                        />
+                      ))}
+                    </div>
                   )}
                 </>
               ) : (
@@ -759,6 +666,83 @@ export default function Home() {
                   </div>
                 </div>
               )}
+            </div>
+          </div>
+        </section>
+
+        <section className="border-b border-slate-200 bg-white">
+          <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+            <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <span className="inline-flex rounded-full border border-[#bfe3ff] bg-[#f0f9ff] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.22em] text-[#1E90FF]">
+                    Portal de notícias
+                  </span>
+                </div>
+
+                <div className="w-full md:max-w-sm">
+                  <input
+                    type="text"
+                    placeholder="Pesquisar notícia..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="w-full rounded-2xl border border-[#cfe9ff] bg-[#f8fcff] px-4 py-3.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1E90FF] focus:ring-2 focus:ring-[#d8efff]"
+                  />
+                </div>
+              </div>
+
+              <div className="md:hidden">
+                <button
+                  onClick={() => setIsMobileCategoriesOpen((prev) => !prev)}
+                  className="inline-flex items-center rounded-2xl border border-[#cfe9ff] bg-[#f0f9ff] px-4 py-3 text-sm font-semibold text-[#0f4fa8] shadow-sm transition hover:bg-[#e6f4ff]"
+                >
+                  Categorias
+                </button>
+              </div>
+
+              {isMobileCategoriesOpen && (
+                <div className="md:hidden">
+                  <div className="flex items-center gap-3 overflow-x-auto rounded-[22px] border border-[#dbeeff] bg-[#f8fcff] px-3 py-3 shadow-[0_10px_30px_rgba(15,23,42,0.04)] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                    <button
+                      onClick={() => setIsMobileCategoriesOpen(false)}
+                      className="flex h-10 min-w-10 items-center justify-center rounded-full border border-[#1E90FF] bg-white text-base font-bold text-[#1E90FF] shadow-sm"
+                      aria-label="Fechar categorias"
+                    >
+                      X
+                    </button>
+
+                    {categories.map((category) => (
+                      <button
+                        key={category}
+                        onClick={() => setSelectedCategory(category)}
+                        className={`whitespace-nowrap rounded-full px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.14em] transition ${
+                          selectedCategory === category
+                            ? "border border-[#1E90FF] bg-[#1E90FF] text-white"
+                            : "border border-[#cfe9ff] bg-[#f0f9ff] text-[#0f4fa8] hover:bg-[#e6f4ff]"
+                        }`}
+                      >
+                        {category}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="hidden flex-wrap gap-2 md:flex">
+                {categories.map((category) => (
+                  <button
+                    key={category}
+                    onClick={() => setSelectedCategory(category)}
+                    className={`rounded-full px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.14em] transition ${
+                      selectedCategory === category
+                        ? "border border-[#1E90FF] bg-[#1E90FF] text-white"
+                        : "border border-[#cfe9ff] bg-[#f0f9ff] text-[#0f4fa8] hover:bg-[#e6f4ff]"
+                    }`}
+                  >
+                    {category}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </section>
