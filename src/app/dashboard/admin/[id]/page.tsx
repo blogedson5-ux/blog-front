@@ -34,6 +34,19 @@ export default function AdminPage() {
           description="Criar, editar e publicar posts"
           onClick={() => router.push(`${pathname}/posts/new`)}
         />
+        <AdminCard
+          icon={<FileText size={22} />}
+          title="Criar Anúncio"
+          description="Criar Novo Anúncio"
+          onClick={() => router.push(`${pathname}/anuncio`)}
+        />
+
+        <AdminCard
+          icon={<FileText size={22} />}
+          title="Gerenciar Anúncio"
+          description="Gerenciador de Anúncio"
+          onClick={() => router.push(`${pathname}/manageAds`)}
+        />
 
         <AdminCard
           icon={<Users size={22} />}

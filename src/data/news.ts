@@ -1,11 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
-import { getPost, getPostById } from "@/hooks/useClient";
-import { News } from "@/types/news";
+import { getAd, getPost, getPostById } from "@/hooks/useClient";
+import { Ad } from "@/types/ad";
 
 export function usePost() {
   return useQuery<News[]>({
     queryKey: ["post"],
     queryFn: getPost,
+  });
+}
+
+export function useAd() {
+  return useQuery<Ad>({
+    queryKey: ["ad"],
+    queryFn: getAd,
   });
 }
 
