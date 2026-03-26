@@ -119,15 +119,6 @@ export default function NewsPage() {
               <p className="text-[18px] leading-9 text-slate-800 sm:text-[20px]">
                 {news.textOne}
               </p>
-
-              {news.textTwo?.trim() ? (
-                <>
-                  <div className="h-px w-full bg-[#cfe9ff]" />
-                  <p className="text-[17px] leading-9 text-slate-700 sm:text-[18px]">
-                    {news.textTwo}
-                  </p>
-                </>
-              ) : null}
             </div>
           </div>
 
