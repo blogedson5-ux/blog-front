@@ -35,13 +35,6 @@ export function Header() {
 
         {/* Actions */}
         <div className="flex items-center gap-3">
-          <button
-            aria-label="Buscar"
-            className="p-2 rounded-full hover:bg-gray-100"
-          >
-            <Search size={20} />
-          </button>
-
           {/* Sign In */}
           {hasToken ? (
             <BackAdminButton />
