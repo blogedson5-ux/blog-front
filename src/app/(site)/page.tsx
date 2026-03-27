@@ -52,6 +52,11 @@ type SidebarAd = {
   href: string;
 };
 
+type GroupedNews = {
+  category: string;
+  items: Post[];
+};
+
 export default function Home() {
   const router = useRouter();
   const { data: news, isLoading, isError } = usePost();
@@ -107,7 +112,7 @@ export default function Home() {
       return [];
     }
 
-    return realAd.images.slice(0, 3).map((image, index) => ({
+    return realAd.images.map((image, index) => ({
       id: image._id || `${realAd._id}-${index}`,
       title: realAd.titulo,
       subtitle: realAd.descricao,
@@ -175,11 +180,19 @@ export default function Home() {
   }, [sortedNews, search, selectedCategory]);
 
   const topNews = filteredNews.slice(0, 3);
-  const latestNews =
-    filteredNews.length > 3 ? filteredNews.slice(3) : filteredNews;
+  const recentNews = filteredNews.slice(0, 3);
 
-  const newsGroupedByCategory = useMemo(() => {
-    const grouped = latestNews.reduce<Record<string, Post[]>>((acc, item) => {
+  const newsGroupedByCategory = useMemo<GroupedNews[]>(() => {
+    if (selectedCategory !== "Todas") {
+      return [
+        {
+          category: selectedCategory,
+          items: filteredNews,
+        },
+      ];
+    }
+
+    const grouped = filteredNews.reduce<Record<string, Post[]>>((acc, item) => {
       const key = item.category?.trim() || "Sem categoria";
 
       if (!acc[key]) {
@@ -194,7 +207,7 @@ export default function Home() {
       category,
       items,
     }));
-  }, [latestNews]);
+  }, [filteredNews, selectedCategory]);
 
   const formatDate = (date: string | Date) => {
     const parsedDate = date instanceof Date ? date : new Date(date);
@@ -581,7 +594,7 @@ export default function Home() {
         <section className="mx-auto max-w-7xl px-0 py-0 sm:px-6 sm:py-6 lg:px-8">
           <div className="relative overflow-hidden rounded-none border-0 bg-white shadow-none sm:rounded-[32px] sm:border sm:border-slate-200 sm:shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
             <div
-              className="relative h-[220px] w-full touch-pan-y sm:h-[320px] lg:h-[390px]"
+              className="relative h-[190px] w-full touch-pan-y sm:h-[320px] lg:h-[390px]"
               onTouchStart={handleBannerTouchStart}
               onTouchMove={handleBannerTouchMove}
               onTouchEnd={handleBannerTouchEnd}
@@ -602,7 +615,7 @@ export default function Home() {
                       <img
                         src={slide.image}
                         alt={slide.title}
-                        className="h-full w-full object-cover"
+                        className="h-full w-full object-cover" style={{ objectPosition: "center top" }}
                       />
 
                       <div className="absolute inset-0 bg-gradient-to-r from-[#081938]/82 via-[#1E90FF]/25 to-transparent" />
@@ -901,7 +914,7 @@ export default function Home() {
                 </h3>
 
                 <div className="mt-4 space-y-4">
-                  {filteredNews.slice(0, 4).map((item) => (
+                  {recentNews.map((item) => (
                     <button
                       key={item._id}
                       onClick={() => handleNavigateToNews(item._id)}

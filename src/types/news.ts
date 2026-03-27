@@ -9,6 +9,7 @@ type News = {
   textOne: string;
   category: string;
   image: NewsImage;
+  videoUrl: string;
   createdAt: Date | string;
   updatedAt: Date | string;
 };

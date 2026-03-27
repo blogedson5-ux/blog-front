@@ -1,10 +1,10 @@
 import axios from "axios";
 
-const URL = "https://blog-back-blond.vercel.app";
+const URL = "http://localhost:5000";
 
 /* https://blog-back-blond.vercel.app */
 
-/* localhost:5000 */
+/* http://localhost:5000 */
 export default axios.create({
   baseURL: URL,
 });

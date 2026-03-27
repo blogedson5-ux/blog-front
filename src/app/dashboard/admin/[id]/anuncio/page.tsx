@@ -36,10 +36,10 @@ type ImageSlot = {
 const BANNER_PRESET = {
   id: "banner-horizontal",
   label: "Banner Horizontal",
-  description: "1200 x 400 • 3:1",
-  aspect: 3 / 1,
-  width: 1200,
-  height: 400,
+  description: "1280 x 390 • 3.28:1",
+  aspect: 1280 / 390,
+  width: 1280,
+  height: 390,
 };
 
 const MAX_IMAGES = 3;

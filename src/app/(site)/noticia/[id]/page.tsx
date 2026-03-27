@@ -2,8 +2,127 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { useMemo, useEffect } from "react";
 import { usePostById, usePost } from "@/data/news";
-import { useMemo } from "react";
+
+declare global {
+  interface Window {
+    instgrm?: {
+      Embeds?: {
+        process: () => void;
+      };
+    };
+  }
+}
+
+function InstagramEmbed({ url }: { url: string }) {
+  useEffect(() => {
+    const scriptId = "instagram-embed-script";
+    const existingScript = document.getElementById(scriptId);
+
+    const processEmbed = () => {
+      if (window.instgrm && window.instgrm.Embeds) {
+        window.instgrm.Embeds.process();
+      }
+    };
+
+    if (!existingScript) {
+      const script = document.createElement("script");
+      script.id = scriptId;
+      script.src = "https://www.instagram.com/embed.js";
+      script.async = true;
+      script.onload = processEmbed;
+      document.body.appendChild(script);
+    } else {
+      processEmbed();
+    }
+  }, [url]);
+
+  return (
+    <div className="flex justify-center">
+      <blockquote
+        className="instagram-media"
+        data-instgrm-permalink={url}
+        data-instgrm-version="14"
+        style={{
+          width: "100%",
+          maxWidth: "540px",
+          margin: "0 auto",
+        }}
+      />
+    </div>
+  );
+}
+
+function extractTikTokVideoId(url: string) {
+  const match = url.match(/\/video\/(\d+)/i);
+  return match ? match[1] : "";
+}
+
+function TikTokEmbed({ url }: { url: string }) {
+  useEffect(() => {
+    const scriptId = "tiktok-embed-script";
+    const existingScript = document.getElementById(scriptId);
+
+    if (!existingScript) {
+      const script = document.createElement("script");
+      script.id = scriptId;
+      script.src = "https://www.tiktok.com/embed.js";
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  }, [url]);
+
+  return (
+    <div className="flex justify-center">
+      <blockquote
+        className="tiktok-embed"
+        cite={url}
+        data-video-id={extractTikTokVideoId(url)}
+        style={{
+          maxWidth: "605px",
+          minWidth: "325px",
+          margin: "0 auto",
+        }}
+      >
+        <section>
+          <a href={url} target="_blank" rel="noopener noreferrer">
+            Ver publicação no TikTok
+          </a>
+        </section>
+      </blockquote>
+    </div>
+  );
+}
+
+function VideoEmbed({ url }: { url?: string }) {
+  if (!url || !url.trim()) return null;
+
+  const isInstagram = url.includes("instagram.com");
+  const isTikTok = url.includes("tiktok.com");
+
+  if (!isInstagram && !isTikTok) return null;
+
+  return (
+    <div className="overflow-hidden rounded-[32px] border border-[#bfe3ff] bg-white shadow-[0_18px_50px_rgba(15,23,42,0.05)]">
+      <div className="border-b border-slate-200 px-6 py-5 sm:px-8">
+        <div className="flex items-center gap-3">
+          <span className="h-2.5 w-2.5 rounded-full bg-[#1E90FF]" />
+          <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-slate-500">
+            Publicação vinculada
+          </p>
+        </div>
+      </div>
+
+      <div className="bg-[#f8fbff] p-4 sm:p-6">
+        <div className="rounded-[24px] border border-slate-200 bg-white p-3 sm:p-4">
+          {isInstagram && <InstagramEmbed url={url} />}
+          {isTikTok && <TikTokEmbed url={url} />}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function NewsPage() {
   const params = useParams();
@@ -25,11 +144,11 @@ export default function NewsPage() {
   const relatedNews = useMemo(() => {
     if (!allNews || !news) return [];
 
-    const filtered = allNews.filter((item) => item._id !== news._id);
+    const filtered = allNews.filter((item: any) => item._id !== news._id);
 
     return [...filtered]
       .sort(
-        (a, b) =>
+        (a: any, b: any) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       )
       .slice(0, 6);
@@ -76,7 +195,7 @@ export default function NewsPage() {
               Matéria
             </span>
 
-            {news.category?.trim() ? (
+            {news.category && news.category.trim() ? (
               <span className="inline-flex rounded-full border border-slate-200 bg-white px-3 py-1 text-slate-600">
                 {news.category}
               </span>
@@ -107,19 +226,25 @@ export default function NewsPage() {
         </section>
 
         <section className="mx-auto mt-10 grid max-w-5xl grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-10">
-          <div className="min-w-0 rounded-[32px] border border-[#bfe3ff] bg-[#f0f9ff] px-6 py-7 shadow-[0_18px_50px_rgba(15,23,42,0.05)] sm:px-9 sm:py-10 lg:px-12">
-            <div className="mb-7 flex items-center gap-3 border-b border-[#cfe9ff] pb-5">
-              <span className="h-2.5 w-2.5 rounded-full bg-[#1E90FF]" />
-              <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-slate-500">
-                Informações da notícia
-              </p>
+          <div className="min-w-0 space-y-8">
+            <div className="rounded-[32px] border border-[#bfe3ff] bg-[#f0f9ff] px-6 py-7 shadow-[0_18px_50px_rgba(15,23,42,0.05)] sm:px-9 sm:py-10 lg:px-12">
+              <div className="mb-7 flex items-center gap-3 border-b border-[#cfe9ff] pb-5">
+                <span className="h-2.5 w-2.5 rounded-full bg-[#1E90FF]" />
+                <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-slate-500">
+                  Informações da notícia
+                </p>
+              </div>
+
+              <div className="max-w-none space-y-8">
+                <p className="text-[18px] leading-9 text-slate-800 sm:text-[20px]">
+                  {news.textOne}
+                </p>
+              </div>
             </div>
 
-            <div className="max-w-none space-y-8">
-              <p className="text-[18px] leading-9 text-slate-800 sm:text-[20px]">
-                {news.textOne}
-              </p>
-            </div>
+            {news.videoUrl && news.videoUrl.trim() ? (
+              <VideoEmbed url={news.videoUrl} />
+            ) : null}
           </div>
 
           <aside className="h-fit lg:sticky lg:top-6">
@@ -148,7 +273,7 @@ export default function NewsPage() {
                   </p>
                 </div>
 
-                {news.category?.trim() ? (
+                {news.category && news.category.trim() ? (
                   <div>
                     <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">
                       Categoria
@@ -177,7 +302,7 @@ export default function NewsPage() {
             </div>
 
             <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-              {relatedNews.map((item) => (
+              {relatedNews.map((item: any) => (
                 <Link
                   key={item._id}
                   href={`/noticia/${item._id}`}
@@ -194,7 +319,7 @@ export default function NewsPage() {
                   <div className="p-5">
                     <div className="flex flex-wrap items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">
                       <span>{formatDate(item.createdAt)}</span>
-                      {item.category?.trim() ? (
+                      {item.category && item.category.trim() ? (
                         <>
                           <span className="h-1 w-1 rounded-full bg-slate-300" />
                           <span>{item.category}</span>

@@ -26,6 +26,7 @@ type PostForm = {
   titulo: string;
   textOne: string;
   category: string;
+  videoUrl: string;
 };
 
 type CropPreset = {
@@ -115,6 +116,7 @@ export default function NewPostPage() {
     titulo: "",
     textOne: "",
     category: "",
+    videoUrl: "",
   });
 
   const [errors, setErrors] = useState<Partial<PostForm>>({});
@@ -158,6 +160,7 @@ export default function NewPostPage() {
       titulo: news.titulo ?? "",
       textOne: news.textOne ?? "",
       category: news.category ?? "",
+      videoUrl: news.videoUrl ?? "",
     });
 
     setCroppedImage(news.image?.url ?? null);
@@ -321,6 +324,7 @@ export default function NewPostPage() {
     formData.append("titulo", form.titulo);
     formData.append("textOne", form.textOne);
     formData.append("category", form.category);
+    formData.append("videoUrl", form.videoUrl);
     formData.append("cropPreset", selectedCropPreset.id);
 
     try {
@@ -331,7 +335,7 @@ export default function NewPostPage() {
       } else {
         await axios.post("post/create-post", formData);
         toast.success("Post criado com sucesso!");
-        setForm({ titulo: "", textOne: "", category: "" });
+        setForm({ titulo: "", textOne: "", category: "", videoUrl: "" });
         removeImage();
       }
     } catch (error: any) {
@@ -690,6 +694,22 @@ export default function NewPostPage() {
                 {errors.textOne && (
                   <p className="text-sm text-red-500">{errors.textOne}</p>
                 )}
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  URL do vídeo (Instagram ou TikTok)
+                </label>
+                <input
+                  name="videoUrl"
+                  value={form.videoUrl}
+                  onChange={handleChange}
+                  placeholder="https://..."
+                  className={inputClass()}
+                />
+                <p className="text-xs text-gray-500">
+                  Cole o link do vídeo. A prévia será exibida após o cadastro.
+                </p>
               </div>
             </div>
 
