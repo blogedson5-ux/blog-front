@@ -154,7 +154,6 @@ export default function NewAdPage() {
     const newErrors: Partial<AdForm> = {};
 
     if (!form.titulo.trim()) newErrors.titulo = "Título é obrigatório";
-    if (!form.link.trim()) newErrors.link = "Link é obrigatório";
 
     const validImages = images.filter((img) => img.croppedImage);
 
@@ -303,7 +302,9 @@ export default function NewAdPage() {
     });
 
     formData.append("titulo", form.titulo);
-    formData.append("link", form.link);
+    if (form.link) {
+      formData.append("link", form.link);
+    }
     formData.append("cropPreset", BANNER_PRESET.id);
     formData.append("existingImages", JSON.stringify(existingImages));
 
@@ -615,7 +616,7 @@ export default function NewAdPage() {
                     value={form.link}
                     onChange={handleChange}
                     placeholder="https://..."
-                    className={inputClass(!!errors.link)}
+                    className={inputClass()}
                   />
                   {errors.link && (
                     <p className="text-sm text-red-500">{errors.link}</p>

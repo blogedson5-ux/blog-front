@@ -637,15 +637,17 @@ export default function Home() {
                             {slide.title}
                           </h2>
 
-                          <a
-                            href={slide.href}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex w-fit items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-[#0f4fa8] transition hover:bg-[#f0f9ff]"
-                          >
-                            {slide.cta}
-                            <span className="text-[10px]">→</span>
-                          </a>
+                          {slide.href && (
+                            <a
+                              href={slide.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex w-fit items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-[#0f4fa8] transition hover:bg-[#f0f9ff]"
+                            >
+                              {slide.cta}
+                              <span className="text-[10px]">→</span>
+                            </a>
+                          )}
                         </div>
                       </div>
                     </div>
