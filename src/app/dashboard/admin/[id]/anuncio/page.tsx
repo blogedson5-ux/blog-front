@@ -20,7 +20,6 @@ import BackAdminButton from "@/components/BackAdminButton";
 
 type AdForm = {
   titulo: string;
-  descricao: string;
   link: string;
 };
 
@@ -36,12 +35,11 @@ type ImageSlot = {
 const BANNER_PRESET = {
   id: "banner-horizontal",
   label: "Banner Horizontal",
-  description: "1280 x 390 • 3.28:1",
-  aspect: 1280 / 390,
+  description: "1280 x 520 • 2.46:1",
+  aspect: 1280 / 520,
   width: 1280,
-  height: 390,
+  height: 520,
 };
-
 const MAX_IMAGES = 3;
 
 function createEmptyImageSlot(id: number): ImageSlot {
@@ -76,7 +74,6 @@ export default function NewAdPage() {
 
   const [form, setForm] = useState<AdForm>({
     titulo: "",
-    descricao: "",
     link: "",
   });
 
@@ -111,7 +108,6 @@ export default function NewAdPage() {
 
         setForm({
           titulo: ad?.titulo || "",
-          descricao: ad?.descricao || "",
           link: ad?.link || "",
         });
 
@@ -158,7 +154,6 @@ export default function NewAdPage() {
     const newErrors: Partial<AdForm> = {};
 
     if (!form.titulo.trim()) newErrors.titulo = "Título é obrigatório";
-    if (!form.descricao.trim()) newErrors.descricao = "Descrição é obrigatória";
     if (!form.link.trim()) newErrors.link = "Link é obrigatório";
 
     const validImages = images.filter((img) => img.croppedImage);
@@ -308,7 +303,6 @@ export default function NewAdPage() {
     });
 
     formData.append("titulo", form.titulo);
-    formData.append("descricao", form.descricao);
     formData.append("link", form.link);
     formData.append("cropPreset", BANNER_PRESET.id);
     formData.append("existingImages", JSON.stringify(existingImages));
@@ -323,7 +317,6 @@ export default function NewAdPage() {
 
         setForm({
           titulo: "",
-          descricao: "",
           link: "",
         });
 
@@ -610,23 +603,6 @@ export default function NewAdPage() {
                   />
                   {errors.titulo && (
                     <p className="text-sm text-red-500">{errors.titulo}</p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Descrição
-                  </label>
-                  <textarea
-                    name="descricao"
-                    value={form.descricao}
-                    onChange={handleChange}
-                    rows={4}
-                    placeholder="Descrição do anúncio"
-                    className={inputClass(!!errors.descricao)}
-                  />
-                  {errors.descricao && (
-                    <p className="text-sm text-red-500">{errors.descricao}</p>
                   )}
                 </div>
 

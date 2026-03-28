@@ -108,7 +108,11 @@ export default function Home() {
   ];
 
   const bannerSlides = useMemo<BannerSlide[]>(() => {
-    if (!realAd || !Array.isArray(realAd.images) || realAd.images.length === 0) {
+    if (
+      !realAd ||
+      !Array.isArray(realAd.images) ||
+      realAd.images.length === 0
+    ) {
       return [];
     }
 
@@ -594,7 +598,7 @@ export default function Home() {
         <section className="mx-auto max-w-7xl px-0 py-0 sm:px-6 sm:py-6 lg:px-8">
           <div className="relative overflow-hidden rounded-none border-0 bg-white shadow-none sm:rounded-[32px] sm:border sm:border-slate-200 sm:shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
             <div
-              className="relative h-[190px] w-full touch-pan-y sm:h-[320px] lg:h-[390px]"
+              className="relative h-[190px] w-full touch-pan-y sm:h-[420px] lg:h-[520px]"
               onTouchStart={handleBannerTouchStart}
               onTouchMove={handleBannerTouchMove}
               onTouchEnd={handleBannerTouchEnd}
@@ -615,33 +619,32 @@ export default function Home() {
                       <img
                         src={slide.image}
                         alt={slide.title}
-                        className="h-full w-full object-cover" style={{ objectPosition: "center top" }}
+                        className="h-full w-full object-cover"
+                        style={{ objectPosition: "center top" }}
                       />
 
                       <div className="absolute inset-0 bg-gradient-to-r from-[#081938]/82 via-[#1E90FF]/25 to-transparent" />
 
                       <div className="absolute inset-0 flex flex-col justify-end p-5 sm:p-8 lg:p-10">
-                        <span className="mb-3 inline-flex w-fit rounded-full bg-white/16 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-white backdrop-blur-sm">
+                        {/* PUBLICIDADE (TOPO FIXO) */}
+                        <span className="absolute top-5 left-5 sm:top-8 sm:left-8 lg:top-10 lg:left-10 inline-flex w-fit rounded-full bg-white/16 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-white backdrop-blur-sm">
                           Publicidade
                         </span>
 
-                        <h2 className="max-w-3xl text-2xl font-black uppercase leading-tight tracking-[-0.03em] text-white sm:text-4xl lg:text-5xl">
-                          {slide.title}
-                        </h2>
+                        {/* CONTEÚDO DE BAIXO */}
+                        <div className="flex flex-col gap-3">
+                          <h2 className="max-w-2xl text-lg font-black uppercase leading-tight tracking-[-0.02em] text-white sm:text-2xl lg:text-3xl">
+                            {slide.title}
+                          </h2>
 
-                        <p className="mt-3 max-w-2xl text-sm leading-6 text-white/90 sm:text-base">
-                          {slide.subtitle}
-                        </p>
-
-                        <div className="mt-5 flex flex-wrap gap-3">
                           <a
                             href={slide.href}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex w-fit items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-[#0f4fa8] transition hover:bg-[#f0f9ff]"
+                            className="inline-flex w-fit items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-[#0f4fa8] transition hover:bg-[#f0f9ff]"
                           >
                             {slide.cta}
-                            <span>→</span>
+                            <span className="text-[10px]">→</span>
                           </a>
                         </div>
                       </div>
