@@ -220,13 +220,7 @@ export default function Home() {
   const touchStartXRef = useRef<number | null>(null);
   const touchEndXRef = useRef<number | null>(null);
 
-  const socialLinks = {
-    instagram: "https://www.instagram.com/",
-    whatsapp: "https://wa.me/5583999999999",
-    tiktok: "https://www.tiktok.com/",
-  };
-
-  const whatsappNumber = "5583999999999";
+  const whatsappNumber = "558381686623";
 
   const getWhatsAppAdLink = (adTitle?: string) => {
     const message = `Olá! Tenho interesse em anunciar no portal.${
@@ -1022,31 +1016,50 @@ export default function Home() {
                         </div>
 
                         <aside className="space-y-4">
-                          {sidebarAds.map((ad) => (
-                            <a
-                              key={ad.id}
-                              href={ad.href}
-                              className="block overflow-hidden rounded-xl border border-slate-200 bg-white"
-                            >
-                              <img
-                                src={ad.image}
-                                alt={ad.title}
-                                className="h-[170px] w-full object-cover"
-                              />
+                          {sidebarAds.map((ad) => {
+                            const whatsappLink = getWhatsAppAdLink(ad.title);
 
-                              <div className="p-4">
-                                <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#1E90FF]">
-                                  Publicidade
-                                </p>
-                                <h4 className="mt-2 text-sm font-extrabold text-slate-900">
-                                  {ad.title}
-                                </h4>
-                                <p className="mt-1 text-xs text-slate-600">
-                                  {ad.subtitle}
-                                </p>
+                            return (
+                              <div
+                                key={ad.id}
+                                className="relative h-[140px] w-full overflow-hidden"
+                              >
+                                <img
+                                  src={ad.image}
+                                  alt={ad.title}
+                                  className="h-full w-full object-cover"
+                                />
+
+                                <div className="absolute inset-0 bg-gradient-to-r from-[#081938]/90 via-[#1E90FF]/35 to-transparent" />
+
+                                <div className="absolute inset-0 flex flex-col justify-between p-3">
+                                  <span className="w-fit rounded-full bg-white/10 px-2 py-1 text-[9px] font-bold uppercase tracking-[0.2em] text-white backdrop-blur-sm">
+                                    Publicidade
+                                  </span>
+
+                                  <div>
+                                    <h3 className="text-xs font-extrabold uppercase text-white">
+                                      {ad.title}
+                                    </h3>
+
+                                    <p className="mt-1 line-clamp-2 text-[10px] text-blue-100">
+                                      {ad.subtitle}
+                                    </p>
+
+                                    <a
+                                      href={whatsappLink}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="mt-2 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[#1E90FF] transition hover:opacity-80"
+                                    >
+                                      Fale conosco
+                                      <span className="text-[#1E90FF]">→</span>
+                                    </a>
+                                  </div>
+                                </div>
                               </div>
-                            </a>
-                          ))}
+                            );
+                          })}
                         </aside>
                       </div>
                     </section>

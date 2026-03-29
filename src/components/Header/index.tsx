@@ -44,7 +44,7 @@ export function Header() {
           {/* Redes sociais */}
           <div className="flex items-center gap-1.5 mr-1 text-blue-400">
             <a
-              href="https://instagram.com/"
+              href="https://www.instagram.com/edson_fherreyra2ct/"
               target="_blank"
               rel="noopener noreferrer"
               className="p-2 rounded-full hover:bg-blue-50 transition"
@@ -54,7 +54,7 @@ export function Header() {
             </a>
 
             <a
-              href="https://wa.me/5599999999999"
+              href="https://wa.me/558381686623"
               target="_blank"
               rel="noopener noreferrer"
               className="p-2 rounded-full hover:bg-blue-50 transition"
@@ -64,7 +64,7 @@ export function Header() {
             </a>
 
             <a
-              href="https://tiktok.com/"
+              href="https://www.tiktok.com/@edson_fherreya2ct?_r=1&_t=ZS-93nEcin1nPd&fbclid=PAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQMMjU2MjgxMDQwNTU4AAGnpLrcJAtctl0lZRL_GeEIgxIdZCSLVSp2nN8-L_VbolAh3IgahUvl6n56fHk_aem_ELBI1Zbzhb642pbmCuzZtg"
               target="_blank"
               rel="noopener noreferrer"
               className="p-2 rounded-full hover:bg-blue-50 transition"

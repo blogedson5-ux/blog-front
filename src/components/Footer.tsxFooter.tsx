@@ -2,9 +2,9 @@
 
 export function Footer() {
   const socialLinks = {
-    instagram: "https://www.instagram.com/",
-    whatsapp: "https://wa.me/5583999999999",
-    tiktok: "https://www.tiktok.com/",
+    instagram: "https://www.instagram.com/edson_fherreyra2ct/",
+    whatsapp: "https://wa.me/558381686623",
+    tiktok: "https://www.tiktok.com/@edson_fherreya2ct?_r=1&_t=ZS-93nEcin1nPd&fbclid=PAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQMMjU2MjgxMDQwNTU4AAGnpLrcJAtctl0lZRL_GeEIgxIdZCSLVSp2nN8-L_VbolAh3IgahUvl6n56fHk_aem_ELBI1Zbzhb642pbmCuzZtg",
   };
 
   return (
