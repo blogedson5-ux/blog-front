@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { getAd, getPost, getPostById } from "@/hooks/useClient";
+import { getAd, getAnalytics, getPost, getPostById } from "@/hooks/useClient";
 import { Ad } from "@/types/ad";
+import { AnalyticsSummary } from "@/types/analytics";
 
 export function usePost() {
   return useQuery<News[]>({
@@ -21,5 +22,12 @@ export function usePostById(id: string | null) {
     queryKey: ["post", id],
     queryFn: () => getPostById(id as string),
     enabled: typeof id === "string",
+  });
+}
+
+export function useAnalytics() {
+  return useQuery<AnalyticsSummary>({
+    queryKey: ["analytics"],
+    queryFn: getAnalytics,
   });
 }

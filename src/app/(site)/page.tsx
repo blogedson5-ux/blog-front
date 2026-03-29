@@ -1,5 +1,6 @@
 "use client";
 
+import { AdBanner } from "@/components/AdBanner";
 import { Footer } from "@/components/Footer.tsxFooter";
 import { useAd, usePost } from "@/data/news";
 import { useRouter } from "next/navigation";
@@ -759,96 +760,8 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-white text-slate-900">
       <div className="relative">
-        <section className="mx-auto max-w-7xl px-0 py-0 sm:px-6 sm:py-6 lg:px-8">
-          <div className="relative overflow-hidden rounded-none border-0 bg-white shadow-none sm:rounded-[32px] sm:border sm:border-slate-200 sm:shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
-            <div
-              className="relative h-[190px] w-full touch-pan-y sm:h-[420px] lg:h-[520px]"
-              onTouchStart={handleBannerTouchStart}
-              onTouchMove={handleBannerTouchMove}
-              onTouchEnd={handleBannerTouchEnd}
-            >
-              {bannerSlides.length > 0 ? (
-                <>
-                  {bannerSlides.map((slide, index) => (
-                    <div
-                      key={slide.id}
-                      className={`absolute inset-0 transition-all duration-700 ${
-                        index === currentBanner
-                          ? "translate-x-0 opacity-100"
-                          : index < currentBanner
-                            ? "-translate-x-full opacity-0"
-                            : "translate-x-full opacity-0"
-                      }`}
-                    >
-                      <img
-                        src={slide.image}
-                        alt={slide.title}
-                        className="h-full w-full object-cover"
-                        style={{ objectPosition: "center top" }}
-                      />
-
-                      <div className="absolute inset-0 bg-gradient-to-r from-[#081938]/82 via-[#1E90FF]/25 to-transparent" />
-
-                      <div className="absolute inset-0 flex flex-col justify-end p-5 sm:p-8 lg:p-10">
-                        <span className="absolute left-5 top-5 inline-flex w-fit rounded-full bg-white/16 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-white backdrop-blur-sm sm:left-8 sm:top-8 lg:left-10 lg:top-10">
-                          Publicidade
-                        </span>
-
-                        <div className="flex flex-col gap-3">
-                          <h2 className="max-w-2xl text-lg font-black uppercase leading-tight tracking-[-0.02em] text-white sm:text-2xl lg:text-3xl">
-                            {slide.title}
-                          </h2>
-
-                          {slide.href && (
-                            <a
-                              href={slide.href}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex w-fit items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-[#0f4fa8] transition hover:bg-[#f0f9ff]"
-                            >
-                              {slide.cta}
-                              <span className="text-[10px]">→</span>
-                            </a>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-
-                  {bannerSlides.length > 1 && (
-                    <div className="absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 gap-2">
-                      {bannerSlides.map((_, index) => (
-                        <button
-                          key={index}
-                          onClick={() => setCurrentBanner(index)}
-                          className={`h-2.5 rounded-full transition-all ${
-                            currentBanner === index
-                              ? "w-8 bg-white"
-                              : "w-2.5 bg-white/45"
-                          }`}
-                          aria-label={`Ir para banner ${index + 1}`}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </>
-              ) : (
-                <div className="absolute inset-0">
-                  <div className="flex h-full w-full items-center justify-center bg-[#eaf4ff] p-8 text-center">
-                    <div>
-                      <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#1E90FF]">
-                        Publicidade
-                      </p>
-                      <h2 className="mt-3 text-2xl font-black uppercase text-slate-900 sm:text-4xl">
-                        Nenhum anúncio disponível
-                      </h2>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </section>
+        {/* Banner Anuncie aqui */}
+        <AdBanner ad={ad} />
 
         <section className="border-b border-slate-200 bg-white">
           <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">

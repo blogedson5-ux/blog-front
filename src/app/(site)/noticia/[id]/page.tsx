@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useMemo, useEffect } from "react";
-import { usePostById, usePost } from "@/data/news";
+import { usePostById, usePost, useAd } from "@/data/news";
+import { AdBanner } from "@/components/AdBanner";
 
 declare global {
   interface Window {
@@ -104,23 +105,19 @@ function VideoEmbed({ url }: { url?: string }) {
   if (!isInstagram && !isTikTok) return null;
 
   return (
-    <div className="overflow-hidden rounded-[32px] border border-[#bfe3ff] bg-white shadow-[0_18px_50px_rgba(15,23,42,0.05)]">
-      <div className="border-b border-slate-200 px-6 py-5 sm:px-8">
-        <div className="flex items-center gap-3">
-          <span className="h-2.5 w-2.5 rounded-full bg-[#1E90FF]" />
-          <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-slate-500">
-            Publicação vinculada
-          </p>
-        </div>
+    <section className="mt-10 border-t border-slate-200 pt-8 sm:pt-10">
+      <div className="mb-5 flex items-center gap-3">
+        <span className="h-2 w-2 rounded-full bg-[#38bdf8]" />
+        <h2 className="text-[11px] font-extrabold uppercase tracking-[0.22em] text-sky-600 sm:text-xs">
+          Publicação vinculada
+        </h2>
       </div>
 
-      <div className="bg-[#f8fbff] p-4 sm:p-6">
-        <div className="rounded-[24px] border border-slate-200 bg-white p-3 sm:p-4">
-          {isInstagram && <InstagramEmbed url={url} />}
-          {isTikTok && <TikTokEmbed url={url} />}
-        </div>
+      <div className="overflow-hidden rounded-[24px] border border-slate-200 bg-white p-3 shadow-[0_10px_30px_rgba(15,23,42,0.06)] sm:p-4">
+        {isInstagram && <InstagramEmbed url={url} />}
+        {isTikTok && <TikTokEmbed url={url} />}
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -130,6 +127,7 @@ export default function NewsPage() {
 
   const { data: news, isLoading, isError } = usePostById(id);
   const { data: allNews } = usePost();
+  const { data: ad } = useAd();
 
   const formatDate = (date: string | Date) => {
     const parsedDate = typeof date === "string" ? new Date(date) : date;
@@ -151,15 +149,15 @@ export default function NewsPage() {
         (a: any, b: any) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       )
-      .slice(0, 6);
+      .slice(0, 8);
   }, [allNews, news]);
 
   if (isLoading) {
     return (
       <main className="min-h-screen bg-white">
         <div className="mx-auto flex min-h-screen max-w-6xl items-center justify-center px-4 sm:px-6 lg:px-8">
-          <div className="rounded-[32px] border border-slate-200 bg-white px-8 py-10 text-center shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
-            <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-[#1E90FF]" />
+          <div className="rounded-[24px] border border-slate-200 bg-white px-8 py-10 text-center shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
+            <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-sky-400" />
             <p className="text-base font-medium text-slate-700">
               Carregando notícia...
             </p>
@@ -173,7 +171,7 @@ export default function NewsPage() {
     return (
       <main className="min-h-screen bg-white">
         <div className="mx-auto flex min-h-screen max-w-6xl items-center justify-center px-4 sm:px-6 lg:px-8">
-          <div className="w-full max-w-md rounded-[32px] border border-slate-200 bg-white p-8 text-center shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
+          <div className="w-full max-w-md rounded-[24px] border border-slate-200 bg-white p-8 text-center shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
             <h2 className="mb-2 text-xl font-semibold text-slate-900">
               Notícia não encontrada
             </h2>
@@ -188,34 +186,39 @@ export default function NewsPage() {
 
   return (
     <main className="min-h-screen bg-white text-slate-900">
-      <article className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
-        <header className="mx-auto max-w-4xl border-b border-slate-200 pb-8 sm:pb-10">
-          <div className="flex flex-wrap items-center gap-3 text-[11px] font-bold uppercase tracking-[0.22em] sm:text-xs">
-            <span className="inline-flex rounded-full border border-[#bfe3ff] bg-[#f0f9ff] px-3 py-1 text-[#1E90FF]">
+      <article className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
+        <header className="mx-auto max-w-4xl border-b border-slate-200 pb-6 sm:pb-8">
+          <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-[0.22em] sm:text-xs">
+            <span className="inline-flex rounded-full bg-sky-50 px-3 py-1 text-sky-600 ring-1 ring-sky-100">
               Matéria
             </span>
 
             {news.category && news.category.trim() ? (
-              <span className="inline-flex rounded-full border border-slate-200 bg-white px-3 py-1 text-slate-600">
+              <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-slate-600">
                 {news.category}
               </span>
             ) : null}
           </div>
 
-          <h1 className="mt-5 text-3xl font-black uppercase leading-[1.02] tracking-[-0.04em] text-slate-900 sm:text-4xl lg:text-[3.6rem]">
+          <h1 className="mt-4 text-[2rem] font-black leading-[1.05] tracking-[-0.04em] text-slate-950 sm:text-[2.6rem] lg:text-[3.4rem]">
             {news.titulo}
           </h1>
 
-          <div className="mt-5 flex flex-wrap items-center gap-3 text-sm text-slate-500">
+          <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-slate-500">
             <span>Publicado em {formatDate(news.createdAt)}</span>
-            <span className="hidden h-1 w-1 rounded-full bg-slate-300 sm:inline-block" />
-            <span>Conteúdo informativo</span>
+
+            {news.category && news.category.trim() ? (
+              <>
+                <span className="h-1 w-1 rounded-full bg-slate-300" />
+                <span>{news.category}</span>
+              </>
+            ) : null}
           </div>
         </header>
 
-        <section className="mx-auto mt-8 max-w-5xl sm:mt-10">
-          <div className="overflow-hidden rounded-[32px] bg-transparent shadow-none">
-            <div className="flex min-h-[240px] items-center justify-center bg-transparent p-0 sm:min-h-[340px] lg:min-h-[560px]">
+        <section className="mx-auto mt-6 max-w-5xl sm:mt-8">
+          <div className="overflow-hidden rounded-[24px] bg-slate-50">
+            <div className="flex min-h-[220px] items-center justify-center sm:min-h-[320px] lg:min-h-[520px]">
               <img
                 src={news.image?.url}
                 alt={news.titulo}
@@ -225,118 +228,70 @@ export default function NewsPage() {
           </div>
         </section>
 
-        <section className="mx-auto mt-10 grid max-w-5xl grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-10">
-          <div className="min-w-0 space-y-8">
-            <div className="rounded-[32px] border border-[#bfe3ff] bg-[#f0f9ff] px-6 py-7 shadow-[0_18px_50px_rgba(15,23,42,0.05)] sm:px-9 sm:py-10 lg:px-12">
-              <div className="mb-7 flex items-center gap-3 border-b border-[#cfe9ff] pb-5">
-                <span className="h-2.5 w-2.5 rounded-full bg-[#1E90FF]" />
-                <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-slate-500">
-                  Informações da notícia
-                </p>
-              </div>
+        <AdBanner ad={ad} className="mt-8 sm:mt-10 lg:mt-12" />
 
-              <div className="max-w-none space-y-8">
-                <p className="text-[18px] leading-9 text-slate-800 sm:text-[20px]">
-                  {news.textOne}
-                </p>
-              </div>
-            </div>
-
-            {news.videoUrl && news.videoUrl.trim() ? (
-              <VideoEmbed url={news.videoUrl} />
-            ) : null}
+        <section className="mx-auto mt-8 max-w-4xl sm:mt-10">
+          <div className="mb-4 flex items-center gap-3">
+            <span className="h-2 w-2 rounded-full bg-[#38bdf8]" />
+            <p className="text-[11px] font-extrabold uppercase tracking-[0.22em] text-sky-600 sm:text-xs">
+              Informações da notícia
+            </p>
           </div>
 
-          <aside className="h-fit lg:sticky lg:top-6">
-            <div className="rounded-[30px] border border-slate-200 bg-white p-6 shadow-[0_18px_55px_rgba(15,23,42,0.08)]">
-              <span className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-[#1E90FF]">
-                Resumo
-              </span>
+          <div className="border-t border-slate-200 pt-6 sm:pt-8">
+            <p className="whitespace-pre-line text-[17px] leading-8 text-slate-800 sm:text-[19px] sm:leading-9">
+              {news.textOne}
+            </p>
+          </div>
 
-              <h2 className="mt-3 text-2xl font-black leading-tight tracking-[-0.02em] text-slate-900">
-                Sobre esta matéria
-              </h2>
-
-              <p className="mt-4 text-sm leading-7 text-slate-600">
-                Página pensada para leitura, com foco no conteúdo da notícia,
-                contraste forte, hierarquia visual clara e acabamento mais
-                editorial.
-              </p>
-
-              <div className="mt-6 space-y-4 border-t border-slate-200 pt-6">
-                <div>
-                  <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">
-                    Data de publicação
-                  </p>
-                  <p className="mt-2 text-sm font-semibold text-slate-900">
-                    {formatDate(news.createdAt)}
-                  </p>
-                </div>
-
-                {news.category && news.category.trim() ? (
-                  <div>
-                    <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">
-                      Categoria
-                    </p>
-                    <p className="mt-2 text-sm font-semibold text-slate-900">
-                      {news.category}
-                    </p>
-                  </div>
-                ) : null}
-              </div>
-            </div>
-          </aside>
+          {news.videoUrl && news.videoUrl.trim() ? (
+            <VideoEmbed url={news.videoUrl} />
+          ) : null}
         </section>
 
         {relatedNews.length > 0 && (
-          <section className="mx-auto mt-16 max-w-6xl border-t border-slate-200 pt-10 sm:pt-12">
-            <div className="mb-8 flex items-end justify-between gap-4">
+          <section className="mx-auto mt-14 max-w-6xl border-t border-slate-200 pt-8 sm:mt-16 sm:pt-10">
+            <div className="mb-6 flex items-end justify-between gap-4">
               <div>
-                <span className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-[#1E90FF] sm:text-xs">
-                  Continue lendo
+                <span className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-sky-600 sm:text-xs">
+                  Veja mais
                 </span>
-                <h2 className="mt-2 text-2xl font-black tracking-[-0.03em] text-slate-900 sm:text-3xl">
+                <h2 className="mt-2 text-2xl font-black tracking-[-0.03em] text-slate-950 sm:text-3xl">
                   Outras matérias
                 </h2>
               </div>
             </div>
 
-            <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
               {relatedNews.map((item: any) => (
                 <Link
                   key={item._id}
                   href={`/noticia/${item._id}`}
-                  className="group overflow-hidden rounded-[30px] border border-[#bfe3ff] bg-[#f0f9ff] shadow-[0_14px_36px_rgba(15,23,42,0.05)] transition-all duration-300 hover:-translate-y-1 hover:bg-[#e7f4ff] hover:shadow-[0_20px_48px_rgba(15,23,42,0.09)]"
+                  className="group overflow-hidden rounded-[18px] border border-slate-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:border-sky-200 hover:shadow-[0_12px_32px_rgba(15,23,42,0.08)]"
                 >
-                  <div className="flex h-[220px] items-center justify-center overflow-hidden bg-transparent p-3">
+                  <div className="aspect-[4/3] overflow-hidden bg-slate-100">
                     <img
                       src={item.image?.url}
                       alt={item.titulo}
-                      className="block h-full w-full object-contain transition duration-500 group-hover:scale-105"
+                      className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                     />
                   </div>
 
-                  <div className="p-5">
-                    <div className="flex flex-wrap items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">
+                  <div className="p-3 sm:p-4">
+                    <div className="flex flex-wrap items-center gap-2 text-[9px] font-bold uppercase tracking-[0.16em] text-slate-500 sm:text-[10px]">
                       <span>{formatDate(item.createdAt)}</span>
+
                       {item.category && item.category.trim() ? (
                         <>
                           <span className="h-1 w-1 rounded-full bg-slate-300" />
-                          <span>{item.category}</span>
+                          <span className="line-clamp-1">{item.category}</span>
                         </>
                       ) : null}
                     </div>
 
-                    <h3 className="mt-4 line-clamp-3 text-lg font-black uppercase leading-7 tracking-[-0.02em] text-slate-900 transition-colors duration-300 group-hover:text-[#0f4fa8]">
+                    <h3 className="mt-2 line-clamp-3 text-sm font-extrabold leading-5 tracking-[-0.02em] text-slate-900 transition-colors duration-300 group-hover:text-sky-700 sm:text-[15px]">
                       {item.titulo}
                     </h3>
-
-                    <div className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-[#1E90FF]">
-                      Ler matéria
-                      <span className="transition-transform duration-300 group-hover:translate-x-1">
-                        →
-                      </span>
-                    </div>
                   </div>
                 </Link>
               ))}

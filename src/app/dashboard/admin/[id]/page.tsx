@@ -59,7 +59,7 @@ export default function AdminPage() {
           icon={<BarChart3 size={22} />}
           title="Estatísticas"
           description="Visualizar métricas do site"
-          onClick={() => router.push("")}
+          onClick={() => router.push(`${pathname}/analytics`)}
         />
       </section>
     </div>
