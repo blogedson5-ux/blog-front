@@ -4,6 +4,16 @@ import { useAd, usePost } from "@/data/news";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+declare global {
+  interface Window {
+    instgrm?: {
+      Embeds?: {
+        process: () => void;
+      };
+    };
+  }
+}
+
 type PostImage = {
   url: string;
   public_id: string;
@@ -15,6 +25,7 @@ type Post = {
   textOne: string;
   category: string;
   image?: PostImage;
+  videoUrl: string;
   createdAt: Date | string;
   updatedAt: Date | string;
 };
@@ -57,6 +68,134 @@ type GroupedNews = {
   items: Post[];
 };
 
+function InstagramEmbedPreview({ url }: { url: string }) {
+  useEffect(() => {
+    const scriptId = "instagram-embed-script-home";
+    const existingScript = document.getElementById(scriptId);
+
+    const processEmbed = () => {
+      if (window.instgrm?.Embeds) {
+        window.instgrm.Embeds.process();
+      }
+    };
+
+    if (!existingScript) {
+      const script = document.createElement("script");
+      script.id = scriptId;
+      script.src = "https://www.instagram.com/embed.js";
+      script.async = true;
+      script.onload = processEmbed;
+      document.body.appendChild(script);
+    } else {
+      processEmbed();
+    }
+  }, [url]);
+
+  return (
+    <div className="flex h-full justify-center overflow-hidden bg-black">
+      <blockquote
+        className="instagram-media"
+        data-instgrm-permalink={url}
+        data-instgrm-version="14"
+        style={{
+          width: "100%",
+          maxWidth: "420px",
+          minWidth: "280px",
+          margin: "0 auto",
+        }}
+      />
+    </div>
+  );
+}
+
+function extractTikTokVideoId(url: string) {
+  const match = url.match(/\/video\/(\d+)/i);
+  return match ? match[1] : "";
+}
+
+function TikTokEmbedPreview({ url }: { url: string }) {
+  useEffect(() => {
+    const scriptId = "tiktok-embed-script-home";
+    const existingScript = document.getElementById(scriptId);
+
+    if (!existingScript) {
+      const script = document.createElement("script");
+      script.id = scriptId;
+      script.src = "https://www.tiktok.com/embed.js";
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  }, [url]);
+
+  return (
+    <div className="flex h-full justify-center overflow-hidden bg-black">
+      <blockquote
+        className="tiktok-embed"
+        cite={url}
+        data-video-id={extractTikTokVideoId(url)}
+        style={{
+          maxWidth: "420px",
+          minWidth: "280px",
+          margin: "0 auto",
+        }}
+      >
+        <section>
+          <a href={url} target="_blank" rel="noopener noreferrer">
+            Ver publicação no TikTok
+          </a>
+        </section>
+      </blockquote>
+    </div>
+  );
+}
+
+function HomeVideoPreview({
+  item,
+  onOpen,
+  formatDate,
+}: {
+  item: Post;
+  onOpen: (id: string) => void;
+  formatDate: (date: string | Date) => string;
+}) {
+  const url = item.videoUrl?.trim();
+
+  if (!url) return null;
+
+  const isInstagram = url.includes("instagram.com");
+  const isTikTok = url.includes("tiktok.com");
+
+  if (!isInstagram && !isTikTok) return null;
+
+  return (
+    <article className="w-[320px] flex-shrink-0 overflow-hidden border border-slate-800 bg-black sm:w-[360px]">
+      <div className="h-[440px] overflow-hidden bg-black">
+        {isInstagram && <InstagramEmbedPreview url={url} />}
+        {isTikTok && <TikTokEmbedPreview url={url} />}
+      </div>
+
+      <div className="border-t border-slate-800 bg-black px-4 py-4">
+        {item.category && item.category.trim() ? (
+          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#7dd3fc]">
+            {item.category}
+          </p>
+        ) : null}
+
+        <h4
+          onClick={() => onOpen(item._id)}
+          className="mt-2 cursor-pointer line-clamp-2 text-sm font-extrabold leading-5 text-white transition hover:text-[#7dd3fc]"
+        >
+          {item.titulo}
+        </h4>
+
+        <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-400">
+          {formatDate(item.createdAt)}
+        </p>
+      </div>
+    </article>
+  );
+}
+
 export default function Home() {
   const router = useRouter();
   const { data: news, isLoading, isError } = usePost();
@@ -80,13 +219,23 @@ export default function Home() {
   const touchStartXRef = useRef<number | null>(null);
   const touchEndXRef = useRef<number | null>(null);
 
+  const whatsappNumber = "5583999999999";
+
+  const getWhatsAppAdLink = (adTitle?: string) => {
+    const message = `Olá! Tenho interesse em anunciar no portal.${
+      adTitle ? ` Vi o espaço "${adTitle}"` : ""
+    } e gostaria de saber mais informações sobre valores, formatos e disponibilidade.`;
+
+    return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+  };
+
   const sidebarAds: SidebarAd[] = [
     {
       id: "1",
       title: "ANUNCIE AQUI",
       subtitle: "Seu negócio em destaque no portal.",
       image:
-        "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1400&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1556740749-887f6717d7e4?q=80&w=1400&auto=format&fit=crop",
       href: "#anuncie-aqui",
     },
     {
@@ -94,13 +243,13 @@ export default function Home() {
       title: "DIVULGUE SUA EMPRESA",
       subtitle: "Mais visibilidade para sua marca.",
       image:
-        "https://images.unsplash.com/photo-1556740749-887f6717d7e4?q=80&w=1400&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1400&auto=format&fit=crop",
       href: "#anuncie-aqui",
     },
     {
       id: "3",
-      title: "ESPAÇO PUBLICITÁRIO",
-      subtitle: "Promova campanhas, eventos e serviços.",
+      title: "IMPULSIONE SUAS VENDAS",
+      subtitle: "Alcance mais clientes todos os dias.",
       image:
         "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1400&auto=format&fit=crop",
       href: "#anuncie-aqui",
@@ -108,11 +257,7 @@ export default function Home() {
   ];
 
   const bannerSlides = useMemo<BannerSlide[]>(() => {
-    if (
-      !realAd ||
-      !Array.isArray(realAd.images) ||
-      realAd.images.length === 0
-    ) {
+    if (!realAd || !Array.isArray(realAd.images) || realAd.images.length === 0) {
       return [];
     }
 
@@ -184,7 +329,6 @@ export default function Home() {
   }, [sortedNews, search, selectedCategory]);
 
   const topNews = filteredNews.slice(0, 3);
-  const recentNews = filteredNews.slice(0, 3);
 
   const newsGroupedByCategory = useMemo<GroupedNews[]>(() => {
     if (selectedCategory !== "Todas") {
@@ -212,6 +356,12 @@ export default function Home() {
       items,
     }));
   }, [filteredNews, selectedCategory]);
+
+  const videoPosts = useMemo(() => {
+    return [...sortedNews].filter(
+      (item) => typeof item.videoUrl === "string" && item.videoUrl.trim() !== "",
+    );
+  }, [sortedNews]);
 
   const formatDate = (date: string | Date) => {
     const parsedDate = date instanceof Date ? date : new Date(date);
@@ -284,13 +434,11 @@ export default function Home() {
     imageClassName?: string;
   }) => {
     return (
-      <div
-        className={`flex h-full w-full items-center justify-center overflow-hidden ${wrapperClassName}`}
-      >
+      <div className={`relative h-full w-full overflow-hidden ${wrapperClassName}`}>
         <img
           src={src}
           alt={alt}
-          className={`block max-h-full max-w-full object-contain ${imageClassName}`}
+          className={`absolute inset-0 h-full w-full object-cover ${imageClassName}`}
         />
       </div>
     );
@@ -338,13 +486,13 @@ export default function Home() {
         <section className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
           <div
             onClick={() => handleNavigateToNews(item._id)}
-            className="group cursor-pointer overflow-hidden rounded-[32px] border border-slate-200 bg-white p-2 shadow-[0_20px_60px_rgba(15,23,42,0.08)]"
+            className="group cursor-pointer overflow-hidden border border-slate-200 bg-white p-2 shadow-[0_20px_60px_rgba(15,23,42,0.08)]"
           >
-            <div className="relative h-[320px] overflow-hidden rounded-[24px] bg-[#eaf4ff] sm:h-[380px] lg:h-[500px]">
+            <div className="relative h-[260px] overflow-hidden bg-[#eaf4ff] sm:h-[380px] lg:h-[500px]">
               {renderNewsImage({
                 src: getImageUrl(item),
                 alt: item.titulo,
-                wrapperClassName: "h-full w-full rounded-[24px] bg-[#eaf4ff]",
+                wrapperClassName: "h-full w-full bg-[#eaf4ff]",
                 imageClassName: "transition duration-500 group-hover:scale-105",
               })}
               {renderOverlayCardContent(item, { large: true })}
@@ -360,20 +508,18 @@ export default function Home() {
 
       return (
         <section className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <div className="rounded-[32px] border border-slate-200 bg-white p-2 shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
+          <div className="border border-slate-200 bg-white p-2 shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
             <div className="grid gap-2 md:hidden">
               <div
                 onClick={() => handleNavigateToNews(main._id)}
-                className="group cursor-pointer overflow-hidden rounded-[24px]"
+                className="group cursor-pointer overflow-hidden"
               >
-                <div className="relative h-[320px] overflow-hidden rounded-[24px] bg-[#eaf4ff] sm:h-[380px]">
+                <div className="relative h-[260px] overflow-hidden bg-[#eaf4ff] sm:h-[380px]">
                   {renderNewsImage({
                     src: getImageUrl(main),
                     alt: main.titulo,
-                    wrapperClassName:
-                      "h-full w-full rounded-[24px] bg-[#eaf4ff]",
-                    imageClassName:
-                      "transition duration-500 group-hover:scale-105",
+                    wrapperClassName: "h-full w-full bg-[#eaf4ff]",
+                    imageClassName: "transition duration-500 group-hover:scale-105",
                   })}
                   {renderOverlayCardContent(main, { large: true })}
                 </div>
@@ -381,16 +527,14 @@ export default function Home() {
 
               <div
                 onClick={() => handleNavigateToNews(secondary._id)}
-                className="group cursor-pointer overflow-hidden rounded-[24px]"
+                className="group cursor-pointer overflow-hidden"
               >
-                <div className="relative h-[220px] overflow-hidden rounded-[24px] bg-[#eaf4ff] sm:h-[280px]">
+                <div className="relative h-[200px] overflow-hidden bg-[#eaf4ff] sm:h-[280px]">
                   {renderNewsImage({
                     src: getImageUrl(secondary),
                     alt: secondary.titulo,
-                    wrapperClassName:
-                      "h-full w-full rounded-[24px] bg-[#eaf4ff]",
-                    imageClassName:
-                      "transition duration-500 group-hover:scale-105",
+                    wrapperClassName: "h-full w-full bg-[#eaf4ff]",
+                    imageClassName: "transition duration-500 group-hover:scale-105",
                   })}
                   {renderOverlayCardContent(secondary)}
                 </div>
@@ -400,34 +544,31 @@ export default function Home() {
             <div className="hidden gap-2 md:grid md:grid-cols-[1.2fr_0.8fr]">
               <div
                 onClick={() => handleNavigateToNews(main._id)}
-                className="group cursor-pointer overflow-hidden rounded-[24px]"
+                className="group cursor-pointer overflow-hidden"
               >
-                <div className="relative min-h-[560px] overflow-hidden rounded-[24px] bg-[#eaf4ff]">
+                <div className="relative h-[560px] overflow-hidden bg-[#eaf4ff]">
                   {renderNewsImage({
                     src: getImageUrl(main),
                     alt: main.titulo,
-                    wrapperClassName:
-                      "h-full w-full rounded-[24px] bg-[#eaf4ff]",
-                    imageClassName:
-                      "transition duration-500 group-hover:scale-105",
+                    wrapperClassName: "h-full w-full bg-[#eaf4ff]",
+                    imageClassName: "transition duration-500 group-hover:scale-105",
                   })}
                   {renderOverlayCardContent(main, { large: true })}
                 </div>
               </div>
 
               <div className="grid grid-rows-2 gap-2">
-                <div className="rounded-[24px] bg-transparent" />
+                <div className="bg-transparent" />
 
                 <div
                   onClick={() => handleNavigateToNews(secondary._id)}
-                  className="group cursor-pointer overflow-hidden rounded-[24px]"
+                  className="group cursor-pointer overflow-hidden"
                 >
-                  <div className="relative h-[278px] overflow-hidden rounded-[24px] bg-[#eaf4ff]">
+                  <div className="relative h-[278px] overflow-hidden bg-[#eaf4ff]">
                     {renderNewsImage({
                       src: getImageUrl(secondary),
                       alt: secondary.titulo,
-                      wrapperClassName:
-                        "h-full w-full rounded-[24px] bg-[#eaf4ff]",
+                      wrapperClassName: "h-full w-full bg-[#eaf4ff]",
                       imageClassName:
                         "transition duration-500 group-hover:scale-105",
                     })}
@@ -447,19 +588,18 @@ export default function Home() {
 
     return (
       <section className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        <div className="rounded-[32px] border border-slate-200 bg-white p-2 shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
+        <div className="border border-slate-200 bg-white p-2 shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
           <div className="grid gap-2 md:hidden">
             <div
               onClick={() => handleNavigateToNews(main._id)}
-              className="group cursor-pointer overflow-hidden rounded-[24px]"
+              className="group cursor-pointer overflow-hidden"
             >
-              <div className="relative h-[320px] overflow-hidden rounded-[24px] bg-[#eaf4ff] sm:h-[380px]">
+              <div className="relative h-[260px] overflow-hidden bg-[#eaf4ff] sm:h-[380px]">
                 {renderNewsImage({
                   src: getImageUrl(main),
                   alt: main.titulo,
-                  wrapperClassName: "h-full w-full rounded-[24px] bg-[#eaf4ff]",
-                  imageClassName:
-                    "transition duration-500 group-hover:scale-105",
+                  wrapperClassName: "h-full w-full bg-[#eaf4ff]",
+                  imageClassName: "transition duration-500 group-hover:scale-105",
                 })}
                 {renderOverlayCardContent(main, { large: true })}
               </div>
@@ -468,14 +608,13 @@ export default function Home() {
             <div className="grid grid-cols-2 gap-2">
               <div
                 onClick={() => handleNavigateToNews(topRight._id)}
-                className="group cursor-pointer overflow-hidden rounded-[24px]"
+                className="group cursor-pointer overflow-hidden"
               >
-                <div className="relative h-[220px] overflow-hidden rounded-[24px] bg-[#eaf4ff] sm:h-[280px]">
+                <div className="relative h-[200px] overflow-hidden bg-[#eaf4ff] sm:h-[280px]">
                   {renderNewsImage({
                     src: getImageUrl(topRight),
                     alt: topRight.titulo,
-                    wrapperClassName:
-                      "h-full w-full rounded-[24px] bg-[#eaf4ff]",
+                    wrapperClassName: "h-full w-full bg-[#eaf4ff]",
                     imageClassName:
                       "transition duration-500 group-hover:scale-105",
                   })}
@@ -485,14 +624,13 @@ export default function Home() {
 
               <div
                 onClick={() => handleNavigateToNews(bottomRight._id)}
-                className="group cursor-pointer overflow-hidden rounded-[24px]"
+                className="group cursor-pointer overflow-hidden"
               >
-                <div className="relative h-[220px] overflow-hidden rounded-[24px] bg-[#eaf4ff] sm:h-[280px]">
+                <div className="relative h-[200px] overflow-hidden bg-[#eaf4ff] sm:h-[280px]">
                   {renderNewsImage({
                     src: getImageUrl(bottomRight),
                     alt: bottomRight.titulo,
-                    wrapperClassName:
-                      "h-full w-full rounded-[24px] bg-[#eaf4ff]",
+                    wrapperClassName: "h-full w-full bg-[#eaf4ff]",
                     imageClassName:
                       "transition duration-500 group-hover:scale-105",
                   })}
@@ -505,15 +643,14 @@ export default function Home() {
           <div className="hidden gap-2 md:grid md:grid-cols-[1.2fr_0.8fr]">
             <div
               onClick={() => handleNavigateToNews(main._id)}
-              className="group cursor-pointer overflow-hidden rounded-[24px]"
+              className="group cursor-pointer overflow-hidden"
             >
-              <div className="relative min-h-[560px] overflow-hidden rounded-[24px] bg-[#eaf4ff]">
+              <div className="relative h-[560px] overflow-hidden bg-[#eaf4ff]">
                 {renderNewsImage({
                   src: getImageUrl(main),
                   alt: main.titulo,
-                  wrapperClassName: "h-full w-full rounded-[24px] bg-[#eaf4ff]",
-                  imageClassName:
-                    "transition duration-500 group-hover:scale-105",
+                  wrapperClassName: "h-full w-full bg-[#eaf4ff]",
+                  imageClassName: "transition duration-500 group-hover:scale-105",
                 })}
                 {renderOverlayCardContent(main, { large: true })}
               </div>
@@ -522,14 +659,13 @@ export default function Home() {
             <div className="grid grid-rows-2 gap-2">
               <div
                 onClick={() => handleNavigateToNews(topRight._id)}
-                className="group cursor-pointer overflow-hidden rounded-[24px]"
+                className="group cursor-pointer overflow-hidden"
               >
-                <div className="relative h-[278px] overflow-hidden rounded-[24px] bg-[#eaf4ff]">
+                <div className="relative h-[278px] overflow-hidden bg-[#eaf4ff]">
                   {renderNewsImage({
                     src: getImageUrl(topRight),
                     alt: topRight.titulo,
-                    wrapperClassName:
-                      "h-full w-full rounded-[24px] bg-[#eaf4ff]",
+                    wrapperClassName: "h-full w-full bg-[#eaf4ff]",
                     imageClassName:
                       "transition duration-500 group-hover:scale-105",
                   })}
@@ -539,14 +675,13 @@ export default function Home() {
 
               <div
                 onClick={() => handleNavigateToNews(bottomRight._id)}
-                className="group cursor-pointer overflow-hidden rounded-[24px]"
+                className="group cursor-pointer overflow-hidden"
               >
-                <div className="relative h-[278px] overflow-hidden rounded-[24px] bg-[#eaf4ff]">
+                <div className="relative h-[278px] overflow-hidden bg-[#eaf4ff]">
                   {renderNewsImage({
                     src: getImageUrl(bottomRight),
                     alt: bottomRight.titulo,
-                    wrapperClassName:
-                      "h-full w-full rounded-[24px] bg-[#eaf4ff]",
+                    wrapperClassName: "h-full w-full bg-[#eaf4ff]",
                     imageClassName:
                       "transition duration-500 group-hover:scale-105",
                   })}
@@ -626,12 +761,10 @@ export default function Home() {
                       <div className="absolute inset-0 bg-gradient-to-r from-[#081938]/82 via-[#1E90FF]/25 to-transparent" />
 
                       <div className="absolute inset-0 flex flex-col justify-end p-5 sm:p-8 lg:p-10">
-                        {/* PUBLICIDADE (TOPO FIXO) */}
-                        <span className="absolute top-5 left-5 sm:top-8 sm:left-8 lg:top-10 lg:left-10 inline-flex w-fit rounded-full bg-white/16 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-white backdrop-blur-sm">
+                        <span className="absolute left-5 top-5 inline-flex w-fit rounded-full bg-white/16 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-white backdrop-blur-sm sm:left-8 sm:top-8 lg:left-10 lg:top-10">
                           Publicidade
                         </span>
 
-                        {/* CONTEÚDO DE BAIXO */}
                         <div className="flex flex-col gap-3">
                           <h2 className="max-w-2xl text-lg font-black uppercase leading-tight tracking-[-0.02em] text-white sm:text-2xl lg:text-3xl">
                             {slide.title}
@@ -660,9 +793,7 @@ export default function Home() {
                           key={index}
                           onClick={() => setCurrentBanner(index)}
                           className={`h-2.5 rounded-full transition-all ${
-                            currentBanner === index
-                              ? "w-8 bg-white"
-                              : "w-2.5 bg-white/45"
+                            currentBanner === index ? "w-8 bg-white" : "w-2.5 bg-white/45"
                           }`}
                           aria-label={`Ir para banner ${index + 1}`}
                         />
@@ -768,186 +899,158 @@ export default function Home() {
         {renderTopNewsSection()}
 
         <section className="mx-auto max-w-7xl px-4 pb-12 pt-2 sm:px-6 lg:px-8">
-          <div className="grid gap-7 lg:grid-cols-[minmax(0,1fr)_320px]">
+          <div className="space-y-10">
             <div className="space-y-7">
-              <div className="rounded-[30px] border border-slate-200 bg-white p-6 shadow-[0_18px_55px_rgba(15,23,42,0.06)]">
-                <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#1E90FF]">
+              <div className="mb-4">
+                <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#1E90FF]">
                   Atualizações
                 </p>
-                <h3 className="mt-2 text-2xl font-black tracking-[-0.03em] text-slate-900 sm:text-[2rem]">
+
+                <h3 className="mt-1 text-lg font-extrabold tracking-tight text-slate-900 sm:text-xl">
                   Últimas notícias por categoria
                 </h3>
               </div>
 
               {newsGroupedByCategory.length > 0 ? (
-                newsGroupedByCategory.map((group) => (
-                  <div
-                    key={group.category}
-                    className="rounded-[30px] border border-slate-200 bg-white p-6 shadow-[0_18px_55px_rgba(15,23,42,0.06)]"
-                  >
-                    <div className="mb-6 border-b border-slate-200 pb-4">
-                      <div className="flex items-center gap-2">
-                        <span className="h-2.5 w-2.5 rounded-full bg-[#1E90FF]" />
-                        <h4 className="text-xl font-black uppercase tracking-[0.04em] text-slate-900">
+                newsGroupedByCategory.map((group) => {
+                  const destaque = group.items.slice(0, 2);
+                  const lista = group.items.slice(2, 12);
+
+                  return (
+                    <section key={group.category} className="mb-10">
+                      <div className="mb-3 flex items-center gap-2">
+                        <span className="h-2 w-2 bg-[#1E90FF]" />
+                        <h4 className="text-sm font-extrabold uppercase tracking-wide text-slate-900">
                           {group.category}
                         </h4>
                       </div>
-                    </div>
 
-                    <div className="grid gap-x-6 gap-y-4 md:grid-cols-2">
-                      {group.items.map((item) => (
-                        <article
-                          key={item._id}
-                          onClick={() => handleNavigateToNews(item._id)}
-                          className="group flex cursor-pointer gap-4 rounded-[24px] border border-[#bfe3ff] bg-[#f0f9ff] p-3 shadow-[0_12px_38px_rgba(15,23,42,0.06)] transition hover:-translate-y-0.5 hover:bg-[#e7f4ff] hover:shadow-[0_18px_48px_rgba(15,23,42,0.10)]"
-                        >
-                          <div className="h-[210px] w-[150px] flex-shrink-0 overflow-hidden rounded-[18px] bg-transparent sm:h-[230px] sm:w-[165px]">
-                            <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-[18px] bg-transparent p-0">
+                      <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
+                        <div>
+                          <div className="grid gap-4 md:grid-cols-2">
+                            {destaque.map((item) => (
+                              <div
+                                key={item._id}
+                                onClick={() => handleNavigateToNews(item._id)}
+                                className="cursor-pointer"
+                              >
+                                <div className="h-[240px] w-full overflow-hidden sm:h-[260px]">
+                                  <img
+                                    src={getImageUrl(item)}
+                                    alt={item.titulo}
+                                    className="h-full w-full object-cover object-center"
+                                  />
+                                </div>
+
+                                <h3 className="mt-2 line-clamp-3 text-sm font-bold leading-tight text-[#1E90FF]">
+                                  {item.titulo}
+                                </h3>
+
+                                <p className="mt-1 text-[10px] text-gray-500">
+                                  {formatDate(item.createdAt)}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+
+                          <div className="mt-4 grid gap-3">
+                            {lista.map((item) => (
+                              <div
+                                key={item._id}
+                                onClick={() => handleNavigateToNews(item._id)}
+                                className="flex cursor-pointer gap-3"
+                              >
+                                <div className="h-[85px] w-[110px] flex-shrink-0 overflow-hidden">
+                                  <img
+                                    src={getImageUrl(item)}
+                                    alt={item.titulo}
+                                    className="h-full w-full object-cover object-center"
+                                  />
+                                </div>
+
+                                <div>
+                                  <h5 className="line-clamp-2 text-xs font-bold leading-tight text-[#1E90FF]">
+                                    {item.titulo}
+                                  </h5>
+
+                                  <p className="mt-1 text-[10px] text-gray-500">
+                                    {formatDate(item.createdAt)}
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="space-y-4">
+                          {sidebarAds.map((adItem) => (
+                            <a
+                              key={adItem.id}
+                              href={getWhatsAppAdLink(adItem.title)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="group relative block overflow-hidden"
+                            >
                               <img
-                                src={getImageUrl(item)}
-                                alt={item.titulo}
-                                className="block max-h-full max-w-full object-contain transition duration-500 group-hover:scale-105"
+                                src={adItem.image}
+                                alt={adItem.title}
+                                className="h-[160px] w-full object-cover transition duration-500 group-hover:scale-105"
                               />
-                            </div>
-                          </div>
 
-                          <div className="min-w-0 flex-1 self-center">
-                            <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.18em] text-[#1E90FF]">
-                              {item.category}
-                            </p>
+                              <div className="absolute inset-0 bg-black/50 transition group-hover:bg-black/60" />
 
-                            <h5 className="line-clamp-3 text-base font-extrabold uppercase leading-6 tracking-[-0.02em] text-slate-900 transition group-hover:text-[#0f4fa8] sm:text-lg">
-                              {item.titulo}
-                            </h5>
+                              <div className="absolute inset-0 flex flex-col justify-end p-4">
+                                <p className="text-[10px] font-bold uppercase tracking-wide text-white">
+                                  Publicidade
+                                </p>
 
-                            <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
-                              {formatDate(item.createdAt)}
-                            </p>
-                          </div>
-                        </article>
-                      ))}
-                    </div>
-                  </div>
-                ))
+                                <h4 className="text-sm font-extrabold uppercase leading-tight text-white">
+                                  {adItem.title}
+                                </h4>
+
+                                <span className="mt-1 text-[10px] font-semibold text-blue-300">
+                                  Clique e anuncie →
+                                </span>
+                              </div>
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    </section>
+                  );
+                })
               ) : (
-                <div className="rounded-[30px] border border-slate-200 bg-white p-6 shadow-[0_18px_55px_rgba(15,23,42,0.06)]">
-                  <div className="rounded-[22px] border border-dashed border-[#cfe9ff] bg-[#f8fcff] px-4 py-12 text-center text-sm text-slate-500">
+                <div className="border border-slate-200 bg-white p-6 shadow-[0_18px_55px_rgba(15,23,42,0.06)]">
+                  <div className="border border-dashed border-[#cfe9ff] bg-[#f8fcff] px-4 py-12 text-center text-sm text-slate-500">
                     Nenhuma notícia encontrada para essa pesquisa.
                   </div>
                 </div>
               )}
             </div>
 
-            <aside className="space-y-5">
-              <div
-                id="anuncie-aqui"
-                className="rounded-[30px] border border-slate-200 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.08)]"
-              >
-                <div className="mb-4 flex items-center justify-between">
-                  <h3 className="text-lg font-black text-slate-900">
-                    Anuncie aqui
+            {videoPosts.length > 0 && (
+              <section className="bg-black px-4 py-6 sm:px-6 lg:px-8">
+                <div className="mb-5 flex items-center gap-3">
+                  <span className="h-3 w-3 rounded-full bg-red-600" />
+                  <h3 className="text-xl font-black uppercase tracking-wide text-white">
+                    Vídeos
                   </h3>
-                  <span className="rounded-full bg-[#f0f9ff] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-[#1E90FF]">
-                    Destaque
-                  </span>
                 </div>
 
-                <div className="space-y-4">
-                  {sidebarAds.map((adItem) => (
-                    <a
-                      key={adItem.id}
-                      href={adItem.href}
-                      className="block overflow-hidden rounded-[22px] border border-slate-200 transition hover:shadow-md"
-                    >
-                      <img
-                        src={adItem.image}
-                        alt={adItem.title}
-                        className="h-40 w-full object-cover"
+                <div className="overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                  <div className="flex min-w-max gap-4">
+                    {videoPosts.map((item) => (
+                      <HomeVideoPreview
+                        key={item._id}
+                        item={item}
+                        onOpen={handleNavigateToNews}
+                        formatDate={formatDate}
                       />
-                      <div className="bg-white p-4">
-                        <p className="text-[11px] font-bold uppercase tracking-wide text-[#1E90FF]">
-                          Publicidade
-                        </p>
-                        <h4 className="mt-1 line-clamp-2 text-sm font-bold uppercase text-slate-900">
-                          {adItem.title}
-                        </h4>
-                        <p className="mt-2 line-clamp-3 text-xs leading-5 text-slate-600">
-                          {adItem.subtitle}
-                        </p>
-                      </div>
-                    </a>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
-
-              <div className="rounded-[30px] border border-slate-200 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.06)]">
-                <h3 className="text-lg font-black text-slate-900">Pesquisar</h3>
-                <input
-                  type="text"
-                  placeholder="Digite um termo..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="mt-4 w-full rounded-2xl border border-[#cfe9ff] bg-[#f8fcff] px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1E90FF] focus:ring-2 focus:ring-[#d8efff]"
-                />
-              </div>
-
-              <div className="hidden rounded-[30px] border border-slate-200 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.06)] md:block">
-                <h3 className="text-lg font-black text-slate-900">
-                  Categorias
-                </h3>
-
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {categories.map((category) => (
-                    <button
-                      key={category}
-                      onClick={() => setSelectedCategory(category)}
-                      className={`rounded-full px-3 py-2 text-xs font-semibold uppercase tracking-[0.14em] transition ${
-                        selectedCategory === category
-                          ? "border border-[#1E90FF] bg-[#1E90FF] text-white"
-                          : "border border-[#cfe9ff] bg-[#f0f9ff] text-[#0f4fa8] hover:bg-[#e6f4ff]"
-                      }`}
-                    >
-                      {category}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="rounded-[30px] border border-slate-200 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.06)]">
-                <h3 className="text-lg font-black text-slate-900">
-                  Mais recentes
-                </h3>
-
-                <div className="mt-4 space-y-4">
-                  {recentNews.map((item) => (
-                    <button
-                      key={item._id}
-                      onClick={() => handleNavigateToNews(item._id)}
-                      className="flex w-full items-center gap-3 rounded-[22px] border border-[#bfe3ff] bg-[#f0f9ff] p-2 text-left shadow-[0_10px_30px_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:bg-[#e7f4ff] hover:shadow-[0_14px_36px_rgba(15,23,42,0.08)]"
-                    >
-                      <div className="h-[120px] w-[92px] flex-shrink-0 overflow-hidden rounded-[16px] bg-transparent">
-                        <div className="flex h-full w-full items-center justify-center p-0">
-                          <img
-                            src={getImageUrl(item)}
-                            alt={item.titulo}
-                            className="max-h-full max-w-full object-contain"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="min-w-0 flex-1">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
-                          {formatDate(item.createdAt)}
-                        </p>
-                        <p className="mt-1 line-clamp-3 text-sm font-bold uppercase leading-5 text-slate-900">
-                          {item.titulo}
-                        </p>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </aside>
+              </section>
+            )}
           </div>
         </section>
       </div>
