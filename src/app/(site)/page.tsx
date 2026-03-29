@@ -1,5 +1,6 @@
 "use client";
 
+import { Footer } from "@/components/Footer.tsxFooter";
 import { useAd, usePost } from "@/data/news";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -386,6 +387,22 @@ export default function Home() {
 
   const handleNavigateToNews = (id: string) => {
     router.push(`/noticia/${id}`);
+  };
+
+  const handleNavigateToCategory = (category: string) => {
+    if (category === "Todas") {
+      router.push("/");
+      return;
+    }
+
+    const slug = category
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "-");
+
+    router.push(`/categoria/${slug}`);
   };
 
   const getImageUrl = (item: Post) =>
@@ -883,7 +900,7 @@ export default function Home() {
                     {categories.map((category) => (
                       <button
                         key={category}
-                        onClick={() => setSelectedCategory(category)}
+                        onClick={() => handleNavigateToCategory(category)}
                         className={`whitespace-nowrap rounded-full px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.14em] transition ${
                           selectedCategory === category
                             ? "border border-[#1E90FF] bg-[#1E90FF] text-white"
@@ -901,7 +918,7 @@ export default function Home() {
                 {categories.map((category) => (
                   <button
                     key={category}
-                    onClick={() => setSelectedCategory(category)}
+                    onClick={() => handleNavigateToCategory(category)}
                     className={`rounded-full px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.14em] transition ${
                       selectedCategory === category
                         ? "border border-[#1E90FF] bg-[#1E90FF] text-white"
@@ -945,96 +962,90 @@ export default function Home() {
                         </h4>
                       </div>
 
-                      <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
-                        <div>
-                          <div className="grid gap-4 md:grid-cols-2">
-                            {destaque.map((item) => (
-                              <div
-                                key={item._id}
-                                onClick={() => handleNavigateToNews(item._id)}
-                                className="cursor-pointer"
-                              >
-                                <div className="h-[240px] w-full overflow-hidden sm:h-[260px]">
-                                  <img
-                                    src={getImageUrl(item)}
-                                    alt={item.titulo}
-                                    className="h-full w-full object-cover object-center"
-                                  />
-                                </div>
+                      {/* 2 notícias grandes */}
+                      <div className="grid gap-4 md:grid-cols-2">
+                        {destaque.map((item) => (
+                          <div
+                            key={item._id}
+                            onClick={() => handleNavigateToNews(item._id)}
+                            className="cursor-pointer"
+                          >
+                            <div className="h-[240px] w-full overflow-hidden sm:h-[260px]">
+                              <img
+                                src={getImageUrl(item)}
+                                alt={item.titulo}
+                                className="h-full w-full object-cover"
+                              />
+                            </div>
 
-                                <h3 className="mt-2 line-clamp-3 text-sm font-bold leading-tight text-[#1E90FF]">
+                            <h3 className="mt-2 line-clamp-3 text-sm font-bold leading-tight text-[#1E90FF]">
+                              {item.titulo}
+                            </h3>
+
+                            <p className="mt-1 text-[10px] text-gray-500">
+                              {formatDate(item.createdAt)}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* pequenas + anuncie aqui */}
+                      <div className="mt-4 grid gap-6 lg:grid-cols-[1fr_300px]">
+                        <div className="grid gap-3 md:grid-cols-2">
+                          {lista.map((item) => (
+                            <div
+                              key={item._id}
+                              onClick={() => handleNavigateToNews(item._id)}
+                              className="flex cursor-pointer gap-3"
+                            >
+                              <div className="h-[85px] w-[110px] flex-shrink-0 overflow-hidden">
+                                <img
+                                  src={getImageUrl(item)}
+                                  alt={item.titulo}
+                                  className="h-full w-full object-cover object-center"
+                                />
+                              </div>
+
+                              <div>
+                                <h5 className="line-clamp-2 text-xs font-bold leading-tight text-[#1E90FF]">
                                   {item.titulo}
-                                </h3>
+                                </h5>
 
                                 <p className="mt-1 text-[10px] text-gray-500">
                                   {formatDate(item.createdAt)}
                                 </p>
                               </div>
-                            ))}
-                          </div>
-
-                          <div className="mt-4 grid gap-3">
-                            {lista.map((item) => (
-                              <div
-                                key={item._id}
-                                onClick={() => handleNavigateToNews(item._id)}
-                                className="flex cursor-pointer gap-3"
-                              >
-                                <div className="h-[85px] w-[110px] flex-shrink-0 overflow-hidden">
-                                  <img
-                                    src={getImageUrl(item)}
-                                    alt={item.titulo}
-                                    className="h-full w-full object-cover object-center"
-                                  />
-                                </div>
-
-                                <div>
-                                  <h5 className="line-clamp-2 text-xs font-bold leading-tight text-[#1E90FF]">
-                                    {item.titulo}
-                                  </h5>
-
-                                  <p className="mt-1 text-[10px] text-gray-500">
-                                    {formatDate(item.createdAt)}
-                                  </p>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
+                            </div>
+                          ))}
                         </div>
 
-                        <div className="space-y-4">
-                          {sidebarAds.map((adItem) => (
+                        <aside className="space-y-4">
+                          {sidebarAds.map((ad) => (
                             <a
-                              key={adItem.id}
-                              href={getWhatsAppAdLink(adItem.title)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="group relative block overflow-hidden"
+                              key={ad.id}
+                              href={ad.href}
+                              className="block overflow-hidden rounded-xl border border-slate-200 bg-white"
                             >
                               <img
-                                src={adItem.image}
-                                alt={adItem.title}
-                                className="h-[160px] w-full object-cover transition duration-500 group-hover:scale-105"
+                                src={ad.image}
+                                alt={ad.title}
+                                className="h-[170px] w-full object-cover"
                               />
 
-                              <div className="absolute inset-0 bg-black/50 transition group-hover:bg-black/60" />
-
-                              <div className="absolute inset-0 flex flex-col justify-end p-4">
-                                <p className="text-[10px] font-bold uppercase tracking-wide text-white">
+                              <div className="p-4">
+                                <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#1E90FF]">
                                   Publicidade
                                 </p>
-
-                                <h4 className="text-sm font-extrabold uppercase leading-tight text-white">
-                                  {adItem.title}
+                                <h4 className="mt-2 text-sm font-extrabold text-slate-900">
+                                  {ad.title}
                                 </h4>
-
-                                <span className="mt-1 text-[10px] font-semibold text-blue-300">
-                                  Clique e anuncie →
-                                </span>
+                                <p className="mt-1 text-xs text-slate-600">
+                                  {ad.subtitle}
+                                </p>
                               </div>
                             </a>
                           ))}
-                        </div>
+                        </aside>
                       </div>
                     </section>
                   );
@@ -1075,90 +1086,7 @@ export default function Home() {
         </section>
       </div>
 
-      <footer className="mt-12 border-t border-slate-200 bg-[#081938] text-white">
-        <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-10 sm:px-6 lg:px-8">
-          <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
-            {/* LOGO */}
-            <div className="flex items-center gap-4">
-              <div className="flex h-20 w-20 items-center justify-center overflow-hidden">
-                <img
-                  src="https://res.cloudinary.com/dybjtiyiv/image/upload/v1774805428/ChatGPT_Image_29_de_mar._de_2026_14_24_34_hmvsxp.png"
-                  alt="Logo do portal"
-                  className="h-full w-full object-contain"
-                />
-              </div>
-
-              <div>
-                <h3 className="text-lg font-black uppercase tracking-[0.08em] text-white">
-                  Portal de Notícias
-                </h3>
-                <p className="mt-1 text-sm text-slate-300">
-                  Informação, vídeos e cobertura local em destaque.
-                </p>
-              </div>
-            </div>
-
-            {/* REDES SOCIAIS */}
-            <div className="flex items-center gap-3">
-              <a
-                href={socialLinks.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Instagram"
-                className="flex h-11 w-11 items-center justify-center border border-white/15 bg-white/5 transition hover:bg-[#1E90FF]"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="h-5 w-5"
-                >
-                  <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5A3.5 3.5 0 1 0 12 15.5 3.5 3.5 0 0 0 12 8.5Zm5.25-2a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5Z" />
-                </svg>
-              </a>
-
-              <a
-                href={socialLinks.whatsapp}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="WhatsApp"
-                className="flex h-11 w-11 items-center justify-center border border-white/15 bg-white/5 transition hover:bg-[#1E90FF]"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="h-5 w-5"
-                >
-                  <path d="M12.04 2C6.52 2 2.05 6.46 2.05 11.98c0 1.77.46 3.49 1.34 5L2 22l5.16-1.35a9.93 9.93 0 0 0 4.88 1.25h.01c5.51 0 9.98-4.47 9.98-9.99A9.98 9.98 0 0 0 12.04 2Zm0 18.2h-.01a8.23 8.23 0 0 1-4.2-1.15l-.3-.18-3.06.8.82-2.99-.2-.31a8.2 8.2 0 0 1-1.27-4.39c0-4.55 3.7-8.25 8.24-8.25 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24Zm4.52-6.17c-.25-.13-1.47-.72-1.7-.8-.23-.08-.39-.13-.56.13-.16.25-.64.8-.78.97-.14.16-.29.18-.54.06-.25-.13-1.05-.39-2-1.24-.74-.66-1.24-1.47-1.39-1.72-.14-.25-.02-.38.11-.5.11-.11.25-.29.38-.43.13-.14.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.13-.56-1.34-.77-1.83-.2-.48-.41-.41-.56-.42h-.48c-.17 0-.43.06-.66.31-.23.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.56.13.17 1.75 2.67 4.25 3.74.59.25 1.06.4 1.42.51.6.19 1.15.16 1.59.1.49-.08 1.47-.6 1.68-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.16-.48-.29Z" />
-                </svg>
-              </a>
-
-              <a
-                href={socialLinks.tiktok}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="TikTok"
-                className="flex h-11 w-11 items-center justify-center border border-white/15 bg-white/5 transition hover:bg-[#1E90FF]"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="h-5 w-5"
-                >
-                  <path d="M14.5 3c.34 1.9 1.46 3.38 3.38 4.1.74.28 1.48.4 2.12.42v2.57a7.3 7.3 0 0 1-3.78-1.07v6.18c0 3.53-2.87 6.4-6.4 6.4S3.42 18.73 3.42 15.2s2.87-6.4 6.4-6.4c.36 0 .72.03 1.06.09v2.67a3.78 3.78 0 0 0-1.06-.15 3.79 3.79 0 1 0 3.79 3.79V3h.89Z" />
-                </svg>
-              </a>
-            </div>
-          </div>
-
-          <div className="border-t border-white/10 pt-4 text-center text-xs uppercase tracking-[0.14em] text-slate-400">
-            © {new Date().getFullYear()} Portal de Notícias. Todos os direitos
-            reservados.
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </main>
   );
 }
