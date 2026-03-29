@@ -878,12 +878,14 @@ export default function Home() {
               </div>
 
               <div className="md:hidden">
-                <button
-                  onClick={() => setIsMobileCategoriesOpen((prev) => !prev)}
-                  className="inline-flex items-center rounded-2xl border border-[#cfe9ff] bg-[#f0f9ff] px-4 py-3 text-sm font-semibold text-[#0f4fa8] shadow-sm transition hover:bg-[#e6f4ff]"
-                >
-                  Categorias
-                </button>
+                {!isMobileCategoriesOpen && (
+                  <button
+                    onClick={() => setIsMobileCategoriesOpen(true)}
+                    className="inline-flex items-center rounded-2xl border border-[#cfe9ff] bg-[#f0f9ff] px-4 py-3 text-sm font-semibold text-[#0f4fa8] shadow-sm transition hover:bg-[#e6f4ff]"
+                  >
+                    Categorias
+                  </button>
+                )}
               </div>
 
               {isMobileCategoriesOpen && (
