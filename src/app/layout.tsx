@@ -11,6 +11,12 @@ export const metadata = {
   title: "Perfil Edson Ferreira | Notícias",
   description: "Últimas notícias e atualizações",
 
+ verification: {
+    google: "fWbzVjwrmym1gYsq9GMmJr5A5Tk4Tt059-mtkjQUozo",
+  },
+
+  /* <meta name="google-site-verification" content="fWbzVjwrmym1gYsq9GMmJr5A5Tk4Tt059-mtkjQUozo" /> */
+
   icons: {
     icon: "https://res.cloudinary.com/dybjtiyiv/image/upload/v1774805428/ChatGPT_Image_29_de_mar._de_2026_14_24_34_hmvsxp.png",
     shortcut: "/favicon.ico",
