@@ -40,6 +40,7 @@ const BANNER_PRESET = {
   width: 1280,
   height: 520,
 };
+
 const MAX_IMAGES = 3;
 
 function createEmptyImageSlot(id: number): ImageSlot {
@@ -337,30 +338,30 @@ export default function NewAdPage() {
   }
 
   const inputClass = (hasError?: boolean) =>
-    `w-full rounded-2xl border bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all ${
+    `w-full rounded-2xl border bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all ${
       hasError
         ? "border-red-400 focus:border-red-500 focus:ring-4 focus:ring-red-100"
-        : "border-gray-200 focus:border-gray-900 focus:ring-4 focus:ring-gray-100"
+        : "border-sky-200 focus:border-sky-500 focus:ring-4 focus:ring-sky-100"
     }`;
 
   return (
-    <div className="min-h-screen bg-[#f6f7f9] px-4 py-8 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-cyan-50 px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-5xl">
         <div className="mb-6">
           <BackAdminButton />
         </div>
 
-        <div className="overflow-hidden rounded-[28px] border border-gray-200 bg-white shadow-[0_10px_40px_rgba(0,0,0,0.04)]">
-          <div className="border-b border-gray-100 px-6 py-6 sm:px-8">
-            <h1 className="text-2xl font-semibold tracking-tight text-gray-900 sm:text-3xl">
+        <div className="overflow-hidden rounded-[28px] border border-sky-100 bg-white shadow-[0_10px_40px_rgba(14,165,233,0.08)]">
+          <div className="border-b border-sky-100 px-6 py-6 sm:px-8">
+            <h1 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
               {pageTitle}
             </h1>
-            <p className="mt-2 text-sm text-gray-500">{pageDescription}</p>
+            <p className="mt-2 text-sm text-slate-500">{pageDescription}</p>
           </div>
 
           {isLoadingAd ? (
             <div className="p-8">
-              <div className="rounded-2xl border border-gray-200 bg-gray-50 px-4 py-6 text-center text-sm text-gray-600">
+              <div className="rounded-2xl border border-sky-100 bg-sky-50 px-4 py-6 text-center text-sm text-slate-600">
                 Carregando dados do anúncio...
               </div>
             </div>
@@ -372,12 +373,12 @@ export default function NewAdPage() {
             >
               <div className="space-y-4">
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-slate-700">
                     Imagens do anúncio
                   </label>
 
                   <div className="flex items-center gap-3">
-                    <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
+                    <span className="rounded-full border border-sky-100 bg-sky-50 px-3 py-1 text-xs font-medium text-sky-700">
                       {images.length}/{MAX_IMAGES} imagens
                     </span>
 
@@ -385,7 +386,7 @@ export default function NewAdPage() {
                       type="button"
                       onClick={addImageSlot}
                       disabled={images.length >= MAX_IMAGES}
-                      className="inline-flex items-center gap-2 rounded-2xl bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-black disabled:cursor-not-allowed disabled:opacity-50"
+                      className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-400 px-4 py-2.5 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       <Upload size={16} />
                       Adicionar imagem
@@ -393,12 +394,12 @@ export default function NewAdPage() {
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3">
-                  <div className="flex items-center gap-2 text-sm font-medium text-gray-900">
-                    <RectangleHorizontal size={16} />
+                <div className="rounded-2xl border border-sky-100 bg-sky-50 px-4 py-3">
+                  <div className="flex items-center gap-2 text-sm font-medium text-slate-900">
+                    <RectangleHorizontal size={16} className="text-sky-600" />
                     Formato obrigatório: {BANNER_PRESET.label}
                   </div>
-                  <p className="mt-1 text-xs text-gray-500">
+                  <p className="mt-1 text-xs text-slate-500">
                     Todas as imagens serão recortadas em {BANNER_PRESET.width} x{" "}
                     {BANNER_PRESET.height}px.
                   </p>
@@ -408,14 +409,14 @@ export default function NewAdPage() {
                   {images.map((item, index) => (
                     <div
                       key={item.id}
-                      className="rounded-3xl border border-gray-200 bg-gray-50 p-4 sm:p-5"
+                      className="rounded-3xl border border-sky-100 bg-sky-50/60 p-4 sm:p-5"
                     >
                       <div className="mb-4 flex items-center justify-between gap-3">
                         <div>
-                          <p className="text-sm font-semibold text-gray-900">
+                          <p className="text-sm font-semibold text-slate-900">
                             Imagem {index + 1}
                           </p>
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-slate-500">
                             Banner horizontal • proporção 3:1
                           </p>
                         </div>
@@ -431,15 +432,15 @@ export default function NewAdPage() {
                       </div>
 
                       {!item.imageSrc && !item.croppedImage && (
-                        <label className="flex min-h-[220px] cursor-pointer flex-col items-center justify-center rounded-3xl border border-dashed border-gray-300 bg-white px-6 text-center transition hover:border-gray-400 hover:bg-gray-50">
-                          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-50 shadow-sm">
-                            <ImagePlus className="text-gray-500" size={24} />
+                        <label className="flex min-h-[220px] cursor-pointer flex-col items-center justify-center rounded-3xl border border-dashed border-sky-200 bg-white px-6 text-center transition hover:border-sky-400 hover:bg-sky-50">
+                          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-50 shadow-sm">
+                            <ImagePlus className="text-sky-600" size={24} />
                           </div>
 
-                          <span className="text-sm font-medium text-gray-700">
+                          <span className="text-sm font-medium text-slate-700">
                             Clique para selecionar a imagem
                           </span>
-                          <span className="mt-1 text-xs text-gray-500">
+                          <span className="mt-1 text-xs text-slate-500">
                             Depois ajuste o recorte no formato banner horizontal
                           </span>
 
@@ -485,7 +486,7 @@ export default function NewAdPage() {
                           </div>
 
                           <div className="space-y-2">
-                            <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                            <span className="text-xs font-medium uppercase tracking-wide text-slate-500">
                               Zoom
                             </span>
                             <input
@@ -500,19 +501,19 @@ export default function NewAdPage() {
                                   zoom: Number(e.target.value),
                                 }))
                               }
-                              className="w-full accent-gray-900"
+                              className="w-full accent-sky-500"
                             />
                           </div>
 
-                          <div className="rounded-2xl border border-gray-200 bg-white px-4 py-3">
-                            <p className="text-sm font-medium text-gray-900">
+                          <div className="rounded-2xl border border-sky-100 bg-white px-4 py-3">
+                            <p className="text-sm font-medium text-slate-900">
                               Formato atual: {BANNER_PRESET.label}
                             </p>
-                            <p className="mt-1 text-xs text-gray-500">
+                            <p className="mt-1 text-xs text-slate-500">
                               Saída do recorte: {BANNER_PRESET.width} x{" "}
                               {BANNER_PRESET.height}px
                             </p>
-                            <p className="mt-1 text-xs text-gray-500">
+                            <p className="mt-1 text-xs text-slate-500">
                               A imagem será salva somente com o recorte, sem
                               bordas pretas.
                             </p>
@@ -522,7 +523,7 @@ export default function NewAdPage() {
                             <button
                               type="button"
                               onClick={() => handleCropConfirm(item.id)}
-                              className="inline-flex items-center justify-center rounded-2xl bg-gray-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-black"
+                              className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-400 px-5 py-3 text-sm font-medium text-white transition hover:opacity-90"
                             >
                               Confirmar recorte
                             </button>
@@ -530,7 +531,7 @@ export default function NewAdPage() {
                             <button
                               type="button"
                               onClick={() => removeImage(item.id)}
-                              className="inline-flex items-center justify-center rounded-2xl border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+                              className="inline-flex items-center justify-center rounded-2xl border border-sky-100 bg-white px-5 py-3 text-sm font-medium text-slate-700 transition hover:bg-sky-50"
                             >
                               Remover imagem
                             </button>
@@ -546,12 +547,12 @@ export default function NewAdPage() {
                               Corte aplicado
                             </span>
 
-                            <span className="rounded-full bg-white px-3 py-1 text-xs font-medium text-gray-600">
+                            <span className="rounded-full border border-sky-100 bg-white px-3 py-1 text-xs font-medium text-sky-700">
                               {BANNER_PRESET.width} x {BANNER_PRESET.height}
                             </span>
                           </div>
 
-                          <div className="w-full overflow-hidden rounded-2xl border border-gray-200 bg-white">
+                          <div className="w-full overflow-hidden rounded-2xl border border-sky-100 bg-white">
                             <img
                               src={item.croppedImage}
                               alt={`Imagem final ${index + 1}`}
@@ -570,7 +571,7 @@ export default function NewAdPage() {
                                   zoom: 1,
                                 }))
                               }
-                              className="inline-flex items-center justify-center rounded-2xl bg-gray-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-black"
+                              className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-400 px-5 py-3 text-sm font-medium text-white transition hover:opacity-90"
                             >
                               Alterar recorte
                             </button>
@@ -578,7 +579,7 @@ export default function NewAdPage() {
                             <button
                               type="button"
                               onClick={() => removeImage(item.id)}
-                              className="inline-flex items-center justify-center rounded-2xl border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+                              className="inline-flex items-center justify-center rounded-2xl border border-sky-100 bg-white px-5 py-3 text-sm font-medium text-slate-700 transition hover:bg-sky-50"
                             >
                               Trocar imagem
                             </button>
@@ -592,7 +593,7 @@ export default function NewAdPage() {
 
               <div className="grid gap-6">
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-slate-700">
                     Título
                   </label>
                   <input
@@ -608,7 +609,7 @@ export default function NewAdPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-slate-700">
                     Link de destino
                   </label>
                   <input
@@ -628,7 +629,7 @@ export default function NewAdPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full rounded-2xl bg-gray-900 px-5 py-3.5 text-sm font-medium text-white transition hover:bg-black disabled:cursor-not-allowed disabled:opacity-50"
+                  className="w-full rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-400 px-5 py-3.5 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {isSubmitting
                     ? isEditMode

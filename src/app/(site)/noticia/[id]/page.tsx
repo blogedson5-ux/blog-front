@@ -200,7 +200,7 @@ export default function NewsPage() {
             ) : null}
           </div>
 
-          <h1 className="mt-4 text-[2rem] font-black leading-[1.05] tracking-[-0.04em] text-slate-950 sm:text-[2.6rem] lg:text-[3.4rem]">
+          <h1 className="mt-4 text-[2rem] font-black uppercase leading-[1.05] tracking-[-0.04em] text-slate-950 sm:text-[2.6rem] lg:text-[3.4rem]">
             {news.titulo}
           </h1>
 
@@ -289,7 +289,7 @@ export default function NewsPage() {
                       ) : null}
                     </div>
 
-                    <h3 className="mt-2 line-clamp-3 text-sm font-extrabold leading-5 tracking-[-0.02em] text-slate-900 transition-colors duration-300 group-hover:text-sky-700 sm:text-[15px]">
+                    <h3 className="mt-2 line-clamp-3 text-sm font-extrabold uppercase leading-5 tracking-[-0.02em] text-slate-900 transition-colors duration-300 group-hover:text-sky-700 sm:text-[15px]">
                       {item.titulo}
                     </h3>
                   </div>
