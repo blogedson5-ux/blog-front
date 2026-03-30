@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://perfiledsonferreira.netlify.app/sitemap.xml
