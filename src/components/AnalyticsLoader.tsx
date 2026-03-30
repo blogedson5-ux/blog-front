@@ -1,38 +1,32 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { parseCookies } from "nookies";
+import { useEffect } from "react";
+import { usePathname } from "next/navigation";
+import axios from "@/lib/axios";
 
 export function AnalyticsLoader() {
-  const [canLoad, setCanLoad] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
-    const cookies = parseCookies();
-    const consent = cookies.cookieConsent;
+    if (!pathname) return;
 
-    if (consent === "accepted") {
-      setCanLoad(true);
-    }
-  }, []);
+    const registerVisit = async () => {
+      try {
+        console.log("📊 Enviando analytics:", { page: pathname });
 
-  if (!canLoad) return null;
+        await axios.post("/analytics/track-visit", {
+          page: pathname,
+        });
 
-  return (
-    <>
-      <script
-        async
-        src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"
-      />
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-XXXXXXX');
-          `,
-        }}
-      />
-    </>
-  );
+        console.log("✅ Analytics enviado");
+      } catch (error: any) {
+        console.log("❌ Erro analytics:", error?.message);
+        console.log("❌ Response:", error?.response?.data);
+      }
+    };
+
+    registerVisit();
+  }, [pathname]);
+
+  return null;
 }

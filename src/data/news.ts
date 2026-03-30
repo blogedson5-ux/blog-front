@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getAd, getAnalytics, getPost, getPostById } from "@/hooks/useClient";
 import { Ad } from "@/types/ad";
 import { AnalyticsSummary } from "@/types/analytics";
+import { getMonthlyReports } from "../hooks/monthlyAnalytics";
 
 export function usePost() {
   return useQuery<News[]>({
@@ -29,5 +30,12 @@ export function useAnalytics() {
   return useQuery<AnalyticsSummary>({
     queryKey: ["analytics"],
     queryFn: getAnalytics,
+  });
+}
+
+export function useMonthlyReports() {
+  return useQuery({
+    queryKey: ["monthly-reports"],
+    queryFn: getMonthlyReports,
   });
 }

@@ -9,13 +9,13 @@ export default function SiteLayout({
 }: {
   children: React.ReactNode;
 }) {
+  console.log("SITE LAYOUT MONTOU");
+
   return (
     <>
       <Header />
       <main className="min-h-screen bg-gray-50">{children}</main>
-
       <AnalyticsLoader />
-
       <CookieBanner />
     </>
   );
