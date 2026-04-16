@@ -4,7 +4,8 @@ export function Footer() {
   const socialLinks = {
     instagram: "https://www.instagram.com/edson_fherreyra2ct/",
     whatsapp: "https://wa.me/558381686623",
-    tiktok: "https://www.tiktok.com/@edson_fherreya2ct?_r=1&_t=ZS-93nEcin1nPd&fbclid=PAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQMMjU2MjgxMDQwNTU4AAGnpLrcJAtctl0lZRL_GeEIgxIdZCSLVSp2nN8-L_VbolAh3IgahUvl6n56fHk_aem_ELBI1Zbzhb642pbmCuzZtg",
+    tiktok:
+      "https://www.tiktok.com/@edson_fherreya2ct?_r=1&_t=ZS-93nEcin1nPd&fbclid=PAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQMMjU2MjgxMDQwNTU4AAGnpLrcJAtctl0lZRL_GeEIgxIdZCSLVSp2nN8-L_VbolAh3IgahUvl6n56fHk_aem_ELBI1Zbzhb642pbmCuzZtg",
   };
 
   return (
@@ -16,7 +17,7 @@ export function Footer() {
             <div className="flex-shrink-0">
               <div className="flex h-25 w-25 items-center justify-center shadow-sm sm:h-14 sm:w-20">
                 <img
-                  src="https://res.cloudinary.com/dybjtiyiv/image/upload/v1774810108/posts/fkzaoz4iw5mrsabobhxo.jpg"
+                  src="https://res.cloudinary.com/dybjtiyiv/image/upload/q_auto/f_auto/v1774805428/ChatGPT_Image_29_de_mar._de_2026_14_24_34_hmvsxp.png"
                   alt="Logo Portal de Notícias"
                   className="h-full w-full object-contain"
                 />

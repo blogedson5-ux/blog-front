@@ -1,6 +1,7 @@
 "use client";
 
 import { AdBanner } from "@/components/AdBanner";
+import { CategoryTabs } from "@/components/CategoryTabs";
 import { Footer } from "@/components/Footer.tsxFooter";
 import { useAd, usePost } from "@/data/news";
 import { useRouter } from "next/navigation";
@@ -216,7 +217,6 @@ export default function Home() {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Todas");
   const [currentBanner, setCurrentBanner] = useState(0);
-  const [isMobileCategoriesOpen, setIsMobileCategoriesOpen] = useState(false);
 
   const touchStartXRef = useRef<number | null>(null);
   const touchEndXRef = useRef<number | null>(null);
@@ -259,11 +259,7 @@ export default function Home() {
   ];
 
   const bannerSlides = useMemo<BannerSlide[]>(() => {
-    if (
-      !realAd ||
-      !Array.isArray(realAd.images) ||
-      realAd.images.length === 0
-    ) {
+    if (!realAd || !Array.isArray(realAd.images) || realAd.images.length === 0) {
       return [];
     }
 
@@ -384,7 +380,9 @@ export default function Home() {
     router.push(`/noticia/${id}`);
   };
 
-  const handleNavigateToCategory = (category: string) => {
+  const handleSelectCategory = (category: string) => {
+    setSelectedCategory(category);
+
     if (category === "Todas") {
       router.push("/");
       return;
@@ -760,83 +758,31 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-white text-slate-900">
       <div className="relative">
-        {/* Banner Anuncie aqui */}
         <AdBanner ad={ad} />
 
         <section className="border-b border-slate-200 bg-white">
           <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-            <div className="flex flex-col gap-6">
-              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <div>
-                  <span className="inline-flex rounded-full border border-[#bfe3ff] bg-[#f0f9ff] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.22em] text-[#1E90FF]">
-                    Portal de notícias
-                  </span>
-                </div>
-
-                <div className="w-full md:max-w-sm">
-                  <input
-                    type="text"
-                    placeholder="Pesquisar notícia..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="w-full rounded-2xl border border-[#cfe9ff] bg-[#f8fcff] px-4 py-3.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1E90FF] focus:ring-2 focus:ring-[#d8efff]"
-                  />
-                </div>
+            <div className="flex flex-col gap-5">
+              <div>
+                <span className="inline-flex rounded-full border border-[#bfe3ff] bg-[#f0f9ff] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.22em] text-[#1E90FF]">
+                  Portal de notícias
+                </span>
               </div>
 
-              <div className="md:hidden">
-                {!isMobileCategoriesOpen && (
-                  <button
-                    onClick={() => setIsMobileCategoriesOpen(true)}
-                    className="inline-flex items-center rounded-2xl border border-[#cfe9ff] bg-[#f0f9ff] px-4 py-3 text-sm font-semibold text-[#0f4fa8] shadow-sm transition hover:bg-[#e6f4ff]"
-                  >
-                    Categorias
-                  </button>
-                )}
-              </div>
+              <CategoryTabs
+                categories={categories}
+                selectedCategory={selectedCategory}
+                onSelectCategory={handleSelectCategory}
+              />
 
-              {isMobileCategoriesOpen && (
-                <div className="md:hidden">
-                  <div className="flex items-center gap-3 overflow-x-auto rounded-[22px] border border-[#dbeeff] bg-[#f8fcff] px-3 py-3 shadow-[0_10px_30px_rgba(15,23,42,0.04)] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-                    <button
-                      onClick={() => setIsMobileCategoriesOpen(false)}
-                      className="flex h-10 min-w-10 items-center justify-center rounded-full border border-[#1E90FF] bg-white text-base font-bold text-[#1E90FF] shadow-sm"
-                      aria-label="Fechar categorias"
-                    >
-                      X
-                    </button>
-
-                    {categories.map((category) => (
-                      <button
-                        key={category}
-                        onClick={() => handleNavigateToCategory(category)}
-                        className={`whitespace-nowrap rounded-full px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.14em] transition ${
-                          selectedCategory === category
-                            ? "border border-[#1E90FF] bg-[#1E90FF] text-white"
-                            : "border border-[#cfe9ff] bg-[#f0f9ff] text-[#0f4fa8] hover:bg-[#e6f4ff]"
-                        }`}
-                      >
-                        {category}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div className="hidden flex-wrap gap-2 md:flex">
-                {categories.map((category) => (
-                  <button
-                    key={category}
-                    onClick={() => handleNavigateToCategory(category)}
-                    className={`rounded-full px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.14em] transition ${
-                      selectedCategory === category
-                        ? "border border-[#1E90FF] bg-[#1E90FF] text-white"
-                        : "border border-[#cfe9ff] bg-[#f0f9ff] text-[#0f4fa8] hover:bg-[#e6f4ff]"
-                    }`}
-                  >
-                    {category}
-                  </button>
-                ))}
+              <div className="w-full md:max-w-sm">
+                <input
+                  type="text"
+                  placeholder="Pesquisar notícia..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full border-b border-[#cfe9ff] bg-transparent px-0 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#1E90FF]"
+                />
               </div>
             </div>
           </div>
@@ -871,7 +817,6 @@ export default function Home() {
                         </h4>
                       </div>
 
-                      {/* 2 notícias grandes */}
                       <div className="grid gap-4 md:grid-cols-2">
                         {destaque.map((item) => (
                           <div
@@ -898,7 +843,6 @@ export default function Home() {
                         ))}
                       </div>
 
-                      {/* pequenas + anuncie aqui */}
                       <div className="mt-4 grid gap-6 lg:grid-cols-[1fr_300px]">
                         <div className="grid gap-3 md:grid-cols-2">
                           {lista.map((item) => (

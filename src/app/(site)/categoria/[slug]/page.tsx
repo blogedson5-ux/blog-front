@@ -1,6 +1,7 @@
 "use client";
 
 import { AdBanner } from "@/components/AdBanner";
+import { CategoryTabs } from "@/components/CategoryTabs";
 import { Footer } from "@/components/Footer.tsxFooter";
 import { useAd, usePost } from "@/data/news";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
@@ -61,6 +62,15 @@ function formatCategoryFromSlug(slug: string) {
   return decodeURIComponent(slug).replace(/-/g, " ");
 }
 
+function slugifyCategory(category: string) {
+  return category
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-");
+}
+
 export default function CategoryPage() {
   const router = useRouter();
   const params = useParams();
@@ -80,6 +90,31 @@ export default function CategoryPage() {
   const touchEndXRef = useRef<number | null>(null);
 
   const categoryName = useMemo(() => formatCategoryFromSlug(slug), [slug]);
+
+  const sortedNews = useMemo(() => {
+    if (!posts.length) return [];
+
+    return [...posts].sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
+  }, [posts]);
+
+  const categories = useMemo(() => {
+    const uniqueCategories = sortedNews
+      .map((item) => item.category?.trim())
+      .filter((category): category is string => Boolean(category));
+
+    return ["Todas", ...Array.from(new Set(uniqueCategories))];
+  }, [sortedNews]);
+
+  const selectedCategory = useMemo(() => {
+    const foundCategory = categories.find(
+      (category) => normalizeText(category) === normalizeText(categoryName),
+    );
+
+    return foundCategory || "Todas";
+  }, [categories, categoryName]);
 
   const filteredPosts = useMemo(() => {
     const normalizedSlug = normalizeText(categoryName);
@@ -167,6 +202,16 @@ export default function CategoryPage() {
 
   const handleNavigateToNews = (id: string) => {
     router.push(`/noticia/${id}`);
+  };
+
+  const handleSelectCategory = (category: string) => {
+    if (category === "Todas") {
+      router.push("/");
+      return;
+    }
+
+    const categorySlug = slugifyCategory(category);
+    router.push(`/categoria/${categorySlug}`);
   };
 
   const goToPage = (page: number) => {
@@ -283,7 +328,13 @@ export default function CategoryPage() {
   return (
     <main className="min-h-screen bg-white text-slate-900">
       <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mb-8">
+        <CategoryTabs
+          categories={categories}
+          selectedCategory={selectedCategory}
+          onSelectCategory={handleSelectCategory}
+        />
+
+        <div className="mb-8 mt-8">
           <button
             onClick={() => router.push("/")}
             className="mb-4 text-sm font-semibold text-[#1E90FF] transition hover:opacity-80"
